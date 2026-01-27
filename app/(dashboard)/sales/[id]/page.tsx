@@ -3,13 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  User,
-  FileText,
-  Printer,
-  Download,
-} from "lucide-react";
+import { ArrowLeft, User, FileText, Printer, Download } from "lucide-react";
 import {
   generateSalesInvoice,
   printInvoice,
@@ -30,12 +24,12 @@ interface SaleItem {
 interface Sale {
   id: string;
   invoiceNumber: string;
-  customerId: string;
+  customerId: string | null;
   customer: {
     name: string;
-    phone: string;
+    phone: string | null;
     balance: number;
-  };
+  } | null;
   saleDate: string;
   totalAmount: number;
   paidAmount: number;
@@ -43,6 +37,8 @@ interface Sale {
   notes: string | null;
   items: SaleItem[];
   createdAt: string;
+  isWalkIn: boolean;
+  walkInCustomerName: string | null;
 }
 
 export default function SaleDetailPage() {
@@ -53,13 +49,13 @@ export default function SaleDetailPage() {
   const [error, setError] = useState("");
   const [paymentHistory, setPaymentHistory] = useState<any[]>([]);
 
-const fetchPaymentHistory = async () => {
-  const res = await fetch(`/api/payment-history?saleId=${params.id}`, {
-    credentials: "include",
-  });
-  const data = await res.json();
-  setPaymentHistory(data);
-};
+  const fetchPaymentHistory = async () => {
+    const res = await fetch(`/api/payment-history?saleId=${params.id}`, {
+      credentials: "include",
+    });
+    const data = await res.json();
+    setPaymentHistory(data);
+  };
 
   useEffect(() => {
     if (params.id) {
@@ -91,14 +87,14 @@ const fetchPaymentHistory = async () => {
     const invoiceData = {
       invoiceNumber: sale.invoiceNumber,
       date: new Date(sale.saleDate).toLocaleDateString("en-PK"),
-      customerName: sale.customer.name,
-      customerPhone: sale.customer.phone,
-      customerAddress: "", // Add if available in your schema
-      customerPreviousBalance: sale.customer.balance - sale.dueAmount,
+      customerName: sale.customer?.name || sale.walkInCustomerName || "Walk-in Customer",
+      customerPhone: sale.customer?.phone || "",
+      customerAddress: "",
+      customerPreviousBalance: sale.customer ? sale.customer.balance - sale.dueAmount : 0,
       items: sale.items.map((item) => ({
         productName: item.product.name,
         quantity: item.quantity,
-        unit: "", // Add unit if available
+        unit: "",
         unitPrice: item.unitPrice,
         totalPrice: item.totalPrice,
       })),
@@ -119,10 +115,10 @@ const fetchPaymentHistory = async () => {
     const invoiceData = {
       invoiceNumber: sale.invoiceNumber,
       date: new Date(sale.saleDate).toLocaleDateString("en-PK"),
-      customerName: sale.customer.name,
-      customerPhone: sale.customer.phone,
+      customerName: sale.customer?.name || sale.walkInCustomerName || "Walk-in Customer",
+      customerPhone: sale.customer?.phone || "",
       customerAddress: "",
-      customerPreviousBalance: sale.customer.balance - sale.dueAmount,
+      customerPreviousBalance: sale.customer ? sale.customer.balance - sale.dueAmount : 0,
       items: sale.items.map((item) => ({
         productName: item.product.name,
         quantity: item.quantity,
@@ -212,30 +208,29 @@ const fetchPaymentHistory = async () => {
           Customer Information
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-  <div className="text-base text-slate-500 dark:text-slate-400">
-    Name:{" "}
-    <span className="font-semibold text-slate-900 dark:text-white text-lg">
-      {sale.customer.name || "N/A"}
-    </span>
-  </div>
+          <div className="text-base text-slate-500 dark:text-slate-400">
+            Name:{" "}
+            <span className="font-semibold text-slate-900 dark:text-white text-lg">
+              {sale.customer?.name || sale.walkInCustomerName || "Walk-in Customer"}
+            </span>
+          </div>
 
-  <div className="text-base text-slate-500 dark:text-slate-400">
-    Phone:{" "}
-    <span className="font-semibold text-slate-900 dark:text-white text-lg">
-      {sale.customer.phone || "N/A"}
-    </span>
-  </div>
+          <div className="text-base text-slate-500 dark:text-slate-400">
+            Phone:{" "}
+            <span className="font-semibold text-slate-900 dark:text-white text-lg">
+              {sale.customer?.phone || "N/A"}
+            </span>
+          </div>
 
-  <div className="text-base text-slate-500 dark:text-slate-400">
-    Balance:{" "}
-    <span className="font-semibold text-emerald-600 text-lg">
-      {sale.customer.balance?.toLocaleString("en-PK", {
-        minimumFractionDigits: 2,
-      }) ?? "N/A"}
-    </span>
-  </div>
-</div>
-
+          <div className="text-base text-slate-500 dark:text-slate-400">
+            Balance:{" "}
+            <span className="font-semibold text-emerald-600 text-lg">
+              {sale.customer?.balance?.toLocaleString("en-PK", {
+                minimumFractionDigits: 2,
+              }) ?? "0.00"}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Items */}

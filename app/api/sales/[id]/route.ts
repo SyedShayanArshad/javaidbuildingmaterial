@@ -42,7 +42,17 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(sale);
+    // Handle walk-in customers by providing default customer object
+    const response = {
+      ...sale,
+      customer: sale.customer || {
+        name: sale.walkInCustomerName || 'Walk-in Customer',
+        phone: null,
+        balance: 0,
+      },
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error('Error fetching sale:', error);
     return NextResponse.json(
