@@ -25,6 +25,7 @@ interface InvoiceData {
   customerName: string;
   customerPhone?: string;
   customerPreviousBalance?: number;
+  isWalkIn?: boolean;
   items: InvoiceItem[];
   totalAmount: number;
   paidAmount: number;
@@ -49,6 +50,7 @@ const COLORS = {
   danger: [220, 38, 38] as [number, number, number],      // Red
   muted: [100, 116, 139] as [number, number, number],     // Gray text
   tableHeader: [30, 64, 175] as [number, number, number], // Same SAP blue
+  warning: [234, 179, 8] as [number, number, number],     // Yellow for previous balance
 };
 
 /* ==================== HELPERS ==================== */
@@ -103,7 +105,7 @@ export function generateSalesInvoice(data: InvoiceData) {
   /* ---------- CUSTOMER ---------- */
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  doc.text("Bill To", PAGE.left, cursorY);
+  doc.text(data.isWalkIn ? "Customer (Walk-in)" : "Bill To", PAGE.left, cursorY);
   cursorY += 6;
 
   doc.setFont("helvetica", "normal");
@@ -113,6 +115,20 @@ export function generateSalesInvoice(data: InvoiceData) {
 
   if (data.customerPhone) {
     doc.text(`Phone: ${data.customerPhone}`, PAGE.left, cursorY);
+    cursorY += 5;
+  }
+
+  // Show previous balance if exists and not walk-in
+  if (!data.isWalkIn && data.customerPreviousBalance !== undefined && data.customerPreviousBalance !== 0) {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...COLORS.warning);
+    doc.text(
+      `Previous Balance: Rs. ${data.customerPreviousBalance.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
+      PAGE.left,
+      cursorY
+    );
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "normal");
     cursorY += 5;
   }
 
@@ -211,6 +227,20 @@ export function generateSalesInvoice(data: InvoiceData) {
         4: { halign: "right" },
       },
     });
+    cursorY = (doc as any).lastAutoTable.finalY + 8;
+  }
+
+  /* ---------- NOTES ---------- */
+  if (data.notes) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("Notes:", PAGE.left, cursorY);
+    cursorY += 4;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    const splitNotes = doc.splitTextToSize(data.notes, doc.internal.pageSize.getWidth() - PAGE.left - PAGE.right);
+    doc.text(splitNotes, PAGE.left, cursorY);
   }
 
   /* ---------- FOOTERS ---------- */
@@ -280,6 +310,20 @@ export function generatePurchaseOrder(data: PurchaseInvoiceData) {
 
   if (data.vendorPhone) {
     doc.text(`Phone: ${data.vendorPhone}`, PAGE.left, cursorY);
+    cursorY += 5;
+  }
+
+  // Show previous balance if exists
+  if (data.vendorPreviousBalance !== undefined && data.vendorPreviousBalance !== 0) {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...COLORS.warning);
+    doc.text(
+      `Previous Balance: Rs. ${data.vendorPreviousBalance.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
+      PAGE.left,
+      cursorY
+    );
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "normal");
     cursorY += 5;
   }
 
@@ -380,6 +424,20 @@ export function generatePurchaseOrder(data: PurchaseInvoiceData) {
         4: { halign: "right" },
       },
     });
+    cursorY = (doc as any).lastAutoTable.finalY + 8;
+  }
+
+  /* ---------- NOTES ---------- */
+  if (data.notes) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("Notes:", PAGE.left, cursorY);
+    cursorY += 4;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    const splitNotes = doc.splitTextToSize(data.notes, doc.internal.pageSize.getWidth() - PAGE.left - PAGE.right);
+    doc.text(splitNotes, PAGE.left, cursorY);
   }
 
   /* ---------- FOOTER ---------- */
