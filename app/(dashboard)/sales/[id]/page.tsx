@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { LoadingSpinner } from "@/components/ui";
 import { ArrowLeft, User, FileText, Printer, Download } from "lucide-react";
 import {
   generateSalesInvoice,
@@ -138,14 +139,13 @@ export default function SaleDetailPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-slate-600 dark:text-slate-400">
-          Loading sale details...
-        </div>
-      </div>
-    );
-  }
+  return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <LoadingSpinner size="lg" text="Loading sale details..." />
+    </div>
+  );
+}
+
 
   if (error || !sale) {
     return (

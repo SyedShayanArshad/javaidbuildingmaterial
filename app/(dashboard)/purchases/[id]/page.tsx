@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
-  Calendar,
   User,
   FileText,
   Printer,
@@ -16,13 +15,12 @@ import {
   printInvoice,
   downloadPDF,
 } from "@/lib/pdf-generator";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface PurchaseItem {
   id: string;
   productId: string;
-  product: {
-    name: string;
-  };
+  product: { name: string };
   quantity: number;
   unitPrice: number;
   totalPrice: number;
@@ -49,18 +47,12 @@ interface Purchase {
 export default function PurchaseDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const [purchase, setPurchase] = useState<Purchase | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-const [paymentHistory, setPaymentHistory] = useState<any[]>([]);
 
-const fetchPaymentHistory = async () => {
-  const res = await fetch(`/api/payment-history?purchaseId=${params.id}`, {
-    credentials: "include",
-  });
-  const data = await res.json();
-  setPaymentHistory(data);
-};
+  const [purchase, setPurchase] = useState<Purchase | null>(null);
+  const [loading, setLoading] = useState(true); // page load
+  const [actionLoading, setActionLoading] = useState(false); // print/download
+  const [error, setError] = useState("");
+  const [paymentHistory, setPaymentHistory] = useState<any[]>([]);
 
   useEffect(() => {
     if (params.id) {
@@ -69,14 +61,22 @@ const fetchPaymentHistory = async () => {
     }
   }, [params.id]);
 
+  const fetchPaymentHistory = async () => {
+    const res = await fetch(
+      `/api/payment-history?purchaseId=${params.id}`,
+      { credentials: "include" }
+    );
+    const data = await res.json();
+    setPaymentHistory(data);
+  };
+
   const fetchPurchase = async () => {
     try {
-      const response = await fetch(`/api/purchases/${params.id}`, {
-        credentials: "include",
-      });
-      if (!response.ok) {
-        throw new Error("Purchase not found");
-      }
+      const response = await fetch(
+        `/api/purchases/${params.id}`,
+        { credentials: "include" }
+      );
+      if (!response.ok) throw new Error("Purchase not found");
       const data = await response.json();
       setPurchase(data);
     } catch (err: any) {
@@ -86,85 +86,68 @@ const fetchPaymentHistory = async () => {
     }
   };
 
-  const handlePrintPO = () => {
+  const buildPOData = () => ({
+    poNumber: purchase!.invoiceNumber,
+    date: new Date(purchase!.purchaseDate).toLocaleDateString("en-PK"),
+    vendorName: purchase!.vendor.name,
+    vendorPhone: purchase!.vendor.phone,
+    vendorPreviousBalance:
+      purchase!.vendor.balance - purchase!.dueAmount,
+    items: purchase!.items.map((item) => ({
+      productName: item.product.name,
+      quantity: item.quantity,
+      unit: "",
+      unitPrice: item.unitPrice,
+      totalPrice: item.totalPrice,
+    })),
+    totalAmount: purchase!.totalAmount,
+    paidAmount: purchase!.paidAmount,
+    dueAmount: purchase!.dueAmount,
+    notes: purchase!.notes || "",
+    paymentHistory,
+  });
+
+  const handlePrintPO = async () => {
     if (!purchase) return;
-
-    const poData = {
-  poNumber: purchase.invoiceNumber,
-  date: new Date(purchase.purchaseDate).toLocaleDateString("en-PK"),
-  vendorName: purchase.vendor.name,
-  vendorPhone: purchase.vendor.phone,
-  vendorPreviousBalance: purchase.vendor.balance - purchase.dueAmount,
-
-  items: purchase.items.map((item) => ({
-    productName: item.product.name,
-    quantity: item.quantity,
-    unit: "",
-    unitPrice: item.unitPrice,
-    totalPrice: item.totalPrice,
-  })),
-
-  totalAmount: purchase.totalAmount,
-  paidAmount: purchase.paidAmount,
-  dueAmount: purchase.dueAmount, // ✅ REQUIRED
-  notes: purchase.notes || "",
-  paymentHistory: paymentHistory,
-};
-
-
-    const doc = generatePurchaseOrder(poData);
-    printInvoice(doc, `PO-${purchase.invoiceNumber}.pdf`);
+    setActionLoading(true);
+    try {
+      const doc = generatePurchaseOrder(buildPOData());
+      printInvoice(doc, `PO-${purchase.invoiceNumber}.pdf`);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
-  const handleDownloadPO = () => {
+  const handleDownloadPO = async () => {
     if (!purchase) return;
-
-    const poData = {
-  poNumber: purchase.invoiceNumber,
-  date: new Date(purchase.purchaseDate).toLocaleDateString("en-PK"),
-  vendorName: purchase.vendor.name,
-  vendorPhone: purchase.vendor.phone,
-  vendorPreviousBalance: purchase.vendor.balance - purchase.dueAmount,
-
-  items: purchase.items.map((item) => ({
-    productName: item.product.name,
-    quantity: item.quantity,
-    unit: "",
-    unitPrice: item.unitPrice,
-    totalPrice: item.totalPrice,
-  })),
-
-  totalAmount: purchase.totalAmount,
-  paidAmount: purchase.paidAmount,
-  dueAmount: purchase.dueAmount, // ✅ REQUIRED
-  notes: purchase.notes || "",
-  paymentHistory: paymentHistory,
-};
-
-
-    const doc = generatePurchaseOrder(poData);
-    downloadPDF(doc, `PO-${purchase.invoiceNumber}.pdf`);
+    setActionLoading(true);
+    try {
+      const doc = generatePurchaseOrder(buildPOData());
+      downloadPDF(doc, `PO-${purchase.invoiceNumber}.pdf`);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-slate-600 dark:text-slate-400">
-          Loading purchase details...
-        </div>
-      </div>
+      <LoadingSpinner
+        fullScreen
+        size="lg"
+        text="Loading purchase details..."
+      />
     );
   }
 
   if (error || !purchase) {
     return (
       <div className="text-center py-12">
-        <div className="text-rose-600 dark:text-rose-400 mb-4">
+        <div className="text-rose-600 mb-4">
           {error || "Purchase not found"}
         </div>
         <Link
           href="/purchases"
-          className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300"
+          className="text-emerald-600 hover:underline"
         >
           ← Back to Purchases
         </Link>
@@ -173,72 +156,80 @@ const fetchPaymentHistory = async () => {
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <Link
-          href="/purchases"
-          className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-2 mb-4 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back to Purchases
-        </Link>
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-              Purchase Details
-            </h1>
-            <p className="text-slate-600 dark:text-slate-400 mt-1">
-              Invoice: {purchase.invoiceNumber}
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={handlePrintPO}
-              className="bg-cyan-600 dark:bg-cyan-700 text-white px-4 py-2 rounded-lg hover:bg-cyan-700 dark:hover:bg-cyan-800 flex items-center gap-2 transition-colors"
-            >
-              <Printer className="w-4 h-4" />
-              Print PO
-            </button>
-            <button
-              onClick={handleDownloadPO}
-              className="bg-emerald-600 dark:bg-emerald-700 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 dark:hover:bg-emerald-800 flex items-center gap-2 transition-colors"
-            >
-              <Download className="w-4 h-4" />
-              Download PDF
-            </button>
+    <>
+      {actionLoading && (
+        <LoadingSpinner
+          fullScreen
+          size="lg"
+          text="Preparing document..."
+        />
+      )}
+
+      <div>
+        {/* Header */}
+        <div className="mb-6">
+          <Link
+            href="/purchases"
+            className="text-emerald-600 hover:underline flex items-center gap-2 mb-4"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to Purchases
+          </Link>
+
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold">
+                Purchase Details
+              </h1>
+              <p className="text-slate-500">
+                Invoice: {purchase.invoiceNumber}
+              </p>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={handlePrintPO}
+                disabled={actionLoading}
+                className="bg-cyan-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+              >
+                <Printer className="w-4 h-4" />
+                Print PO
+              </button>
+
+              <button
+                onClick={handleDownloadPO}
+                disabled={actionLoading}
+                className="bg-emerald-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Download PDF
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Vendor Information */}
-      <div className="card mb-6">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-          <User className="w-5 h-5" />
-          Vendor Information
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="text-base text-slate-500 dark:text-slate-400">
-            Name:{" "}
-            <span className="font-semibold text-slate-900 dark:text-white text-lg">
-              {purchase.vendor.name || "N/A"}
-            </span>
-          </div>
+        {/* Vendor Info */}
+        <div className="card mb-6">
+          <h2 className="text-lg font-semibold flex items-center gap-2 mb-4">
+            <User className="w-5 h-5" />
+            Vendor Information
+          </h2>
 
-          <div className="text-base text-slate-500 dark:text-slate-400">
-            Phone:{" "}
-            <span className="font-semibold text-slate-900 dark:text-white text-lg">
-              {purchase.vendor.phone || "N/A"}
-            </span>
-          </div>
-
-          <div className="text-base text-slate-500 dark:text-slate-400">
-            Remaining Balance:{" "}
-            <span className="font-semibold text-red-600 text-lg">
-              {purchase.vendor.balance || "N/A"}
-            </span>
+          <div className="grid md:grid-cols-3 gap-4">
+            <div>
+              Name: <strong>{purchase.vendor.name}</strong>
+            </div>
+            <div>
+              Phone: <strong>{purchase.vendor.phone}</strong>
+            </div>
+            <div>
+              Balance:{" "}
+              <strong className="text-rose-600">
+                Rs. {purchase.vendor.balance}
+              </strong>
+            </div>
           </div>
         </div>
-      </div>
       {/* Items */}
       <div className="card mb-6">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
@@ -341,5 +332,6 @@ const fetchPaymentHistory = async () => {
         </div>
       )}
     </div>
+  </>
   );
 }

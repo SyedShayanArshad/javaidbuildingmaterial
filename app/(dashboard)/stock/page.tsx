@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Package, TrendingUp, TrendingDown, History } from 'lucide-react';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import {
   Card,
   Button,
@@ -41,6 +42,7 @@ export default function StockAdjustmentPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [adjustments, setAdjustments] = useState<StockAdjustment[]>([]);
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState('');
   const [adjustmentType, setAdjustmentType] = useState<'IN' | 'OUT'>('IN');
   const [quantity, setQuantity] = useState('');
@@ -49,9 +51,15 @@ export default function StockAdjustmentPage() {
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
-    fetchProducts();
-    fetchAdjustments();
-  }, []);
+  const loadData = async () => {
+    setPageLoading(true);
+    await Promise.all([fetchProducts(), fetchAdjustments()]);
+    setPageLoading(false);
+  };
+
+  loadData();
+}, []);
+
 
   const fetchProducts = async () => {
     try {
@@ -112,6 +120,15 @@ export default function StockAdjustmentPage() {
   };
 
   return (
+    <>
+    {(pageLoading || loading) && (
+      <LoadingSpinner
+        fullScreen
+        size="lg"
+        text={pageLoading ? 'Loading stock data...' : 'Adjusting stock...'}
+      />
+    )}
+
     <div className="space-y-6">
       <PageHeader
         title="Stock Adjustment"
@@ -300,5 +317,6 @@ export default function StockAdjustmentPage() {
         </Card>
       )}
     </div>
+    </>
   );
 }

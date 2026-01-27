@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ArrowLeft, Plus, Phone, MapPin, DollarSign } from 'lucide-react';
 import {
   Card,
@@ -53,6 +54,15 @@ export default function NewVendorPage() {
   };
 
   return (
+    <>
+    {loading && (
+      <LoadingSpinner
+        fullScreen
+        size="lg"
+        text="Creating vendor..."
+      />
+    )}
+
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button onClick={() => router.push('/vendors')} variant="outline" size="sm">
@@ -120,5 +130,6 @@ export default function NewVendorPage() {
         </Card>
       </div>
     </div>
+    </>
   );
 }

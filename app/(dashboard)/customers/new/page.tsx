@@ -14,6 +14,8 @@ import {
   FormRow,
   FormSection
 } from '@/components/ui';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+
 
 export default function NewCustomerPage() {
   const router = useRouter();
@@ -53,6 +55,15 @@ export default function NewCustomerPage() {
   };
 
   return (
+    <>
+    {loading && (
+      <LoadingSpinner
+        fullScreen
+        size="lg"
+        text="Creating customer..."
+      />
+    )}
+
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button onClick={() => router.push('/customers')} variant="outline" size="sm">
@@ -126,5 +137,6 @@ export default function NewCustomerPage() {
         </Card>
       </div>
     </div>
+    </>
   );
 }

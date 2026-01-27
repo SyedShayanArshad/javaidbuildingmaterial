@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useToast, Button } from '@/components/ui';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+
 
 interface Vendor {
   id: string;
@@ -31,6 +33,7 @@ export default function NewPurchasePage() {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [pageLoading, setPageLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState('');
   
@@ -46,10 +49,12 @@ export default function NewPurchasePage() {
     { productId: '', quantity: '', rate: '', amount: 0 },
   ]);
 
+
   useEffect(() => {
-    fetchVendors();
-    fetchProducts();
-  }, []);
+  Promise.all([fetchVendors(), fetchProducts()])
+    .finally(() => setPageLoading(false));
+}, []);
+
 
   const fetchVendors = async () => {
     try {
@@ -144,6 +149,15 @@ export default function NewPurchasePage() {
   };
 
   return (
+    <>
+  {(pageLoading || loading) && (
+    <LoadingSpinner
+      fullScreen
+      size="lg"
+      text={pageLoading ? 'Loading data...' : 'Creating purchase...'}
+    />
+  )}
+
     <div>
       <div className="mb-6">
         <Link
@@ -394,5 +408,6 @@ export default function NewPurchasePage() {
         </form>
       </div>
     </div>
+    </>
   );
 }

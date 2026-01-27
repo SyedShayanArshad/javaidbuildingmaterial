@@ -128,6 +128,7 @@ export default function ReportsPage() {
   // Loading states
   const [loadingProfitLoss, setLoadingProfitLoss] = useState(true);
   const [loadingTab, setLoadingTab] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const router = useRouter();
 
   const [startDate, setStartDate] = useState("");
@@ -187,13 +188,17 @@ export default function ReportsPage() {
   useEffect(() => {
     fetchProfitLoss();
   }, [startDate, endDate]);
+useEffect(() => {
+  const load = async () => {
+    setPageLoading(true);
+    await fetchReports();
+    setPageLoading(false);
+  };
+  load();
+}, [activeTab, startDate, endDate]);
 
-  useEffect(() => {
-    fetchReports();
-  }, [activeTab, startDate, endDate]);
 
   const fetchReports = async () => {
-    setLoadingTab(true);
     try {
       if (activeTab === "stock") {
         const productsRes = await fetch("/api/products", {
@@ -260,8 +265,6 @@ export default function ReportsPage() {
       }
     } catch (error) {
       console.error("Error fetching reports:", error);
-    } finally {
-      setLoadingTab(false);
     }
   };
 
@@ -351,6 +354,15 @@ export default function ReportsPage() {
   };
 
   return (
+    <>
+  {pageLoading && (
+    <LoadingSpinner
+      fullScreen
+      size="lg"
+      text="Loading reports..."
+    />
+  )}
+
     <div className="space-y-6">
       <PageHeader
         title="Reports & Analytics"
@@ -1398,5 +1410,6 @@ export default function ReportsPage() {
         </div>
       )}
     </div>
+    </>
   );
 }

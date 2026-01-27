@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Plus, Trash2, Search, X } from 'lucide-react';
 import { useToast, Button } from '@/components/ui';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+
 
 interface Customer {
   id: string;
@@ -33,9 +35,11 @@ export default function NewSalePage() {
   const router = useRouter();
   const toast = useToast();
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState('');
+
   
   // Customer search states
   const [searchQuery, setSearchQuery] = useState('');
@@ -60,19 +64,23 @@ export default function NewSalePage() {
   ]);
 
   useEffect(() => {
-    fetchCustomers();
-    fetchProducts();
+  const loadData = async () => {
+    setPageLoading(true);
+    await Promise.all([fetchCustomers(), fetchProducts()]);
+    setPageLoading(false);
+  };
 
-    // Close search results when clicking outside
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setShowSearchResults(false);
-      }
-    };
+  loadData();
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const handleClickOutside = (event: MouseEvent) => {
+    if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      setShowSearchResults(false);
+    }
+  };
+
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => document.removeEventListener('mousedown', handleClickOutside);
+}, []);
 
   useEffect(() => {
     // Debounced search
@@ -267,6 +275,15 @@ export default function NewSalePage() {
   };
 
   return (
+    <>
+  {(pageLoading || loading) && (
+    <LoadingSpinner
+      fullScreen
+      size="lg"
+      text={pageLoading ? 'Loading data...' : 'Creating sale...'}
+    />
+  )}
+
     <div>
       <div className="mb-6">
         <Link
@@ -624,5 +641,6 @@ export default function NewSalePage() {
         </form>
       </div>
     </div>
+    </>
   );
 }
