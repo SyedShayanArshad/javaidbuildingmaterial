@@ -1,8 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { Plus, Eye, FileText, Calendar, DollarSign } from 'lucide-react';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import {
+  Plus,
+  Eye,
+  FileText,
+  Calendar,
+  DollarSign,
+  Printer,
+} from "lucide-react";
+import { generatePurchaseOrder, printInvoice } from "@/lib/pdf-generator";
+
 import {
   Card,
   Button,
@@ -16,8 +25,8 @@ import {
   PageHeader,
   LoadingSpinner,
   EmptyState,
-  Badge
-} from '@/components/ui';
+  Badge,
+} from "@/components/ui";
 
 interface Purchase {
   id: string;
@@ -36,7 +45,7 @@ interface Purchase {
 export default function PurchasesPage() {
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchPurchases();
@@ -45,13 +54,13 @@ export default function PurchasesPage() {
   const fetchPurchases = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/purchases', {
-        credentials: 'include',
+      const response = await fetch("/api/purchases", {
+        credentials: "include",
       });
       const data = await response.json();
       setPurchases(data);
     } catch (error) {
-      console.error('Error fetching purchases:', error);
+      console.error("Error fetching purchases:", error);
     } finally {
       setLoading(false);
     }
@@ -59,35 +68,57 @@ export default function PurchasesPage() {
 
   const filteredPurchases = purchases.filter(
     (purchase) =>
-      purchase.vendor.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      purchase.invoiceNumber
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase())
+      purchase.vendor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      purchase.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const totalPurchases = purchases.reduce(
-    (sum, p) => sum + p.totalAmount,
-    0
-  );
-  const totalPaid = purchases.reduce(
-    (sum, p) => sum + p.paidAmount,
-    0
-  );
-  const totalDue = purchases.reduce(
-    (sum, p) => sum + p.dueAmount,
-    0
-  );
+  const totalPurchases = purchases.reduce((sum, p) => sum + p.totalAmount, 0);
+  const totalPaid = purchases.reduce((sum, p) => sum + p.paidAmount, 0);
+  const totalDue = purchases.reduce((sum, p) => sum + p.dueAmount, 0);
+  const handlePrintPDF = async (purchaseId: string) => {
+    try {
+      const res = await fetch(`/api/purchases/${purchaseId}`, {
+        credentials: "include",
+      });
+      const purchase = await res.json();
+
+      const paymentRes = await fetch(
+        `/api/payment-history?purchaseId=${purchaseId}`,
+        { credentials: "include" },
+      );
+      const paymentHistory = await paymentRes.json();
+
+      const doc = generatePurchaseOrder({
+        poNumber: purchase.invoiceNumber,
+        date: new Date(purchase.purchaseDate).toLocaleDateString("en-PK"),
+        vendorName: purchase.vendor.name,
+        vendorPhone: purchase.vendor.phone,
+        vendorPreviousBalance: purchase.vendor.balance - purchase.dueAmount,
+        items: purchase.items.map((item: any) => ({
+          productName: item.product.name,
+          quantity: item.quantity,
+          unit: "",
+          unitPrice: item.unitPrice,
+          totalPrice: item.totalPrice,
+        })),
+        totalAmount: purchase.totalAmount,
+        paidAmount: purchase.paidAmount,
+        dueAmount: purchase.dueAmount,
+        notes: purchase.notes || "",
+        paymentHistory,
+      });
+
+      // ✅ PRINT (not download)
+      printInvoice(doc, `PO-${purchase.invoiceNumber}.pdf`);
+    } catch (err) {
+      console.error("Print failed", err);
+    }
+  };
 
   return (
     <>
       {loading && (
-        <LoadingSpinner
-          fullScreen
-          size="lg"
-          text="Loading purchases..."
-        />
+        <LoadingSpinner fullScreen size="lg" text="Loading purchases..." />
       )}
 
       <div className="space-y-6">
@@ -95,7 +126,7 @@ export default function PurchasesPage() {
           title="Purchases"
           description="Manage purchase orders and inventory receipts"
           actions={
-            <Button onClick={() => (window.location.href = '/purchases/new')}>
+            <Button onClick={() => (window.location.href = "/purchases/new")}>
               <Plus className="w-4 h-4" />
               New Purchase
             </Button>
@@ -111,8 +142,8 @@ export default function PurchasesPage() {
                   Total Purchases
                 </p>
                 <p className="text-2xl font-bold mt-2">
-                  Rs.{' '}
-                  {totalPurchases.toLocaleString('en-PK', {
+                  Rs.{" "}
+                  {totalPurchases.toLocaleString("en-PK", {
                     minimumFractionDigits: 2,
                   })}
                 </p>
@@ -130,8 +161,8 @@ export default function PurchasesPage() {
                   Total Paid
                 </p>
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">
-                  Rs.{' '}
-                  {totalPaid.toLocaleString('en-PK', {
+                  Rs.{" "}
+                  {totalPaid.toLocaleString("en-PK", {
                     minimumFractionDigits: 2,
                   })}
                 </p>
@@ -149,8 +180,8 @@ export default function PurchasesPage() {
                   Total Payable
                 </p>
                 <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-2">
-                  Rs.{' '}
-                  {totalDue.toLocaleString('en-PK', {
+                  Rs.{" "}
+                  {totalDue.toLocaleString("en-PK", {
                     minimumFractionDigits: 2,
                   })}
                 </p>
@@ -168,7 +199,7 @@ export default function PurchasesPage() {
             placeholder="Search by vendor or invoice number..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onClear={() => setSearchQuery('')}
+            onClear={() => setSearchQuery("")}
           />
         </Card>
 
@@ -180,15 +211,13 @@ export default function PurchasesPage() {
               title="No purchases found"
               description={
                 searchQuery
-                  ? 'Try adjusting your search terms'
-                  : 'Create your first purchase order to get started'
+                  ? "Try adjusting your search terms"
+                  : "Create your first purchase order to get started"
               }
               action={
                 !searchQuery ? (
                   <Button
-                    onClick={() =>
-                      (window.location.href = '/purchases/new')
-                    }
+                    onClick={() => (window.location.href = "/purchases/new")}
                   >
                     <Plus className="w-4 h-4" />
                     Create Purchase Order
@@ -228,22 +257,20 @@ export default function PurchasesPage() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
-                        {new Date(
-                          purchase.purchaseDate
-                        ).toLocaleDateString()}
+                        {new Date(purchase.purchaseDate).toLocaleDateString()}
                       </div>
                     </TableCell>
 
                     <TableCell className="text-right font-semibold">
-                      Rs.{' '}
-                      {purchase.totalAmount.toLocaleString('en-PK', {
+                      Rs.{" "}
+                      {purchase.totalAmount.toLocaleString("en-PK", {
                         minimumFractionDigits: 2,
                       })}
                     </TableCell>
 
                     <TableCell className="text-right text-green-600">
-                      Rs.{' '}
-                      {purchase.paidAmount.toLocaleString('en-PK', {
+                      Rs.{" "}
+                      {purchase.paidAmount.toLocaleString("en-PK", {
                         minimumFractionDigits: 2,
                       })}
                     </TableCell>
@@ -252,12 +279,12 @@ export default function PurchasesPage() {
                       <span
                         className={
                           purchase.dueAmount > 0
-                            ? 'text-red-600 font-semibold'
-                            : 'text-gray-500'
+                            ? "text-red-600 font-semibold"
+                            : "text-gray-500"
                         }
                       >
-                        Rs.{' '}
-                        {purchase.dueAmount.toLocaleString('en-PK', {
+                        Rs.{" "}
+                        {purchase.dueAmount.toLocaleString("en-PK", {
                           minimumFractionDigits: 2,
                         })}
                       </span>
@@ -281,6 +308,14 @@ export default function PurchasesPage() {
                       >
                         <Eye className="w-4 h-4" />
                         View
+                      </Button>
+                      <Button
+                        onClick={() => handlePrintPDF(purchase.id)}
+                        variant="ghost"
+                        size="sm"
+                      >
+                        <Printer className="w-4 h-4 text-cyan-600" />
+                        Print
                       </Button>
                     </TableCell>
                   </TableRow>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Plus, Eye, ShoppingBag, Calendar, User, UserCheck } from 'lucide-react';
+import { Plus, Eye, ShoppingBag, Calendar, User, UserCheck,Printer } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -10,6 +10,10 @@ import { SearchInput } from '@/components/ui/SearchInput';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, EmptyState } from '@/components/ui/Table';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Badge } from '@/components/ui/Badge';
+import {
+  generateSalesInvoice,
+  printInvoice,
+} from "@/lib/pdf-generator";
 
 // ✅ Updated interface to match Prisma schema
 interface Sale {
@@ -67,6 +71,55 @@ export default function SalesPage() {
       </div>
     );
   }
+const handlePrintSale = async (saleId: string) => {
+  try {
+    // sale fetch
+    const res = await fetch(`/api/sales/${saleId}`, {
+      credentials: "include",
+    });
+    const sale = await res.json();
+
+    // payment history fetch
+    const payRes = await fetch(
+      `/api/payment-history?saleId=${saleId}`,
+      { credentials: "include" }
+    );
+    const paymentHistory = await payRes.json();
+
+    const invoiceData = {
+      invoiceNumber: sale.invoiceNumber,
+      date: new Date(sale.saleDate).toLocaleDateString("en-PK"),
+      customerName:
+        sale.customer?.name ||
+        sale.walkInCustomerName ||
+        "Walk-in Customer",
+      customerPhone: sale.customer?.phone || "",
+      customerAddress: "",
+      customerPreviousBalance: sale.customer
+        ? sale.customer.balance - sale.dueAmount
+        : 0,
+      items: sale.items.map((item: any) => ({
+        productName: item.product.name,
+        quantity: item.quantity,
+        unit: "",
+        unitPrice: item.unitPrice,
+        totalPrice: item.totalPrice,
+      })),
+      totalAmount: sale.totalAmount,
+      paidAmount: sale.paidAmount,
+      dueAmount: sale.dueAmount,
+      notes: sale.notes || "",
+      paymentHistory,
+    };
+
+    const doc = generateSalesInvoice(invoiceData);
+
+    // ✅ PRINT
+    printInvoice(doc, `Invoice-${sale.invoiceNumber}.pdf`);
+  } catch (err) {
+    console.error("Sale print failed", err);
+  }
+};
 
   const totalSales = sales.reduce((sum, s) => sum + s.totalAmount, 0);
   const totalDue = sales.reduce((sum, s) => sum + s.dueAmount, 0);
@@ -225,14 +278,23 @@ export default function SalesPage() {
                       <Badge variant="success" size="sm">Paid</Badge>
                     )}
                   </TableCell>
-                  <TableCell className="text-center">
-                    <Link href={`/sales/${sale.id}`}>
-                      <button className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors inline-flex items-center gap-1">
-                        <Eye className="w-4 h-4" />
-                        <span className="text-sm">View</span>
-                      </button>
-                    </Link>
-                  </TableCell>
+                  <TableCell className="text-center flex justify-center gap-2">
+  <Link href={`/sales/${sale.id}`}>
+    <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg inline-flex items-center gap-1">
+      <Eye className="w-4 h-4" />
+      <span className="text-sm">View</span>
+    </button>
+  </Link>
+
+  <button
+    onClick={() => handlePrintSale(sale.id)}
+    className="p-2 text-cyan-600 hover:bg-cyan-50 rounded-lg inline-flex items-center gap-1"
+  >
+    <Printer className="w-4 h-4" />
+    <span className="text-sm">Print</span>
+  </button>
+</TableCell>
+
                 </TableRow>
               );
             })}
