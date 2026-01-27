@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { X, LucideIcon } from 'lucide-react';
+import Image from 'next/image';
 
 export interface NavItem {
   name: string;
@@ -49,9 +50,7 @@ export function Sidebar({ isOpen, onClose, navigation, user, onLogout }: Sidebar
         {/* Header */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
-              <span className="text-white font-bold text-lg">J</span>
-            </div>
+            <Image src="/logo.png" alt="Logo" width={40} height={40} />
             <div>
               <h1 className="text-lg font-bold text-slate-900 dark:text-white">Javaid Building</h1>
               <p className="text-[10px] text-slate-500 dark:text-slate-400">Material Shop</p>
