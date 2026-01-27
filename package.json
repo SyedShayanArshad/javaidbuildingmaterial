@@ -1,0 +1,54 @@
+{
+  "name": "javaid-building-material-shop",
+  "version": "1.0.0",
+  "description": "Inventory Management System for Javaid Building Material Shop",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.3.4",
+    "@prisma/client": "^5.9.0",
+    "bcryptjs": "^2.4.3",
+    "date-fns": "^3.2.0",
+    "jose": "^5.10.0",
+    "jsonwebtoken": "^9.0.3",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.2",
+    "lucide-react": "^0.312.0",
+    "next": "^14.1.0",
+    "next-auth": "^4.24.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.49.3",
+    "react-hot-toast": "^2.4.1",
+    "recharts": "^2.10.4",
+    "zod": "^3.22.4",
+    "zustand": "^5.0.10"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.11.5",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "^14.1.0",
+    "postcss": "^8.4.33",
+    "prisma": "^5.9.0",
+    "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}
