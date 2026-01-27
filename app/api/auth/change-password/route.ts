@@ -1,15 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/db';
+import { getSessionFromRequest } from '@/lib/session';
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId, currentPassword, newPassword } = await request.json();
+    // 🔐 1. Get user from secure session (cookie/JWT)
+    const sessionUser = await getSessionFromRequest(request);
 
-    // Validation
-    if (!userId || !currentPassword || !newPassword) {
+    if (!sessionUser) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // 2. Read body (NO userId here)
+    const { currentPassword, newPassword } = await request.json();
+
+    if (!currentPassword || !newPassword) {
       return NextResponse.json(
         { error: 'All fields are required' },
         { status: 400 }
@@ -23,9 +32,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find the user
+    // 3. Fetch user from DB using session user id
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: sessionUser.id },
     });
 
     if (!user) {
@@ -35,22 +44,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify current password
-    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    // 4. Verify current password
+    const isValid = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
 
-    if (!isPasswordValid) {
+    if (!isValid) {
       return NextResponse.json(
         { error: 'Current password is incorrect' },
         { status: 401 }
       );
     }
 
-    // Hash the new password
+    // 5. Hash & update password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update the password
     await prisma.user.update({
-      where: { id: userId },
+      where: { id: user.id },
       data: { password: hashedPassword },
     });
 
@@ -59,12 +70,10 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error changing password:', error);
+    console.error('Change password error:', error);
     return NextResponse.json(
       { error: 'An error occurred while changing password' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

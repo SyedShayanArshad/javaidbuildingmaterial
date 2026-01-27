@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Card } from '@/components/ui/Card';
@@ -16,13 +17,23 @@ export default function SettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-
+  const router = useRouter();
   useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-  }, []);
+    fetch('/api/auth/verify-session', {
+      credentials: 'include',
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('unauthorized');
+        return res.json();
+      })
+      .then(data => {
+        setUser(data.user);
+      })
+      .catch(() => {
+        router.push('/login');
+      });
+  }, [router]);
+
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +65,6 @@ export default function SettingsPage() {
         },
         credentials: 'include',
         body: JSON.stringify({
-          userId: user.id,
           currentPassword,
           newPassword,
         }),
