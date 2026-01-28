@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/db';
 import { requireAuth, isErrorResponse } from '@/lib/api-auth';
 
-const prisma = new PrismaClient();
 
 // Get payment history for a specific transaction
 export async function GET(request: NextRequest) {
