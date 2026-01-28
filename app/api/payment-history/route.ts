@@ -62,26 +62,69 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Use transaction to ensure data consistency
+    // Validate and fetch data BEFORE transaction to reduce transaction time
+    let validationData: any = null;
+    
+    if (saleId) {
+      const sale = await prisma.sale.findUnique({
+        where: { id: saleId },
+        select: {
+          id: true,
+          dueAmount: true,
+          paidAmount: true,
+          customerId: true,
+          customer: {
+            select: {
+              id: true,
+              balance: true,
+            },
+          },
+        },
+      });
+
+      if (!sale) {
+        throw new Error('Sale not found');
+      }
+
+      if (amount > sale.dueAmount) {
+        throw new Error(`Payment amount cannot exceed due amount of Rs. ${sale.dueAmount}`);
+      }
+
+      validationData = sale;
+    } else if (purchaseId) {
+      const purchase = await prisma.purchase.findUnique({
+        where: { id: purchaseId },
+        select: {
+          id: true,
+          dueAmount: true,
+          paidAmount: true,
+          vendorId: true,
+          vendor: {
+            select: {
+              id: true,
+              balance: true,
+            },
+          },
+        },
+      });
+
+      if (!purchase) {
+        throw new Error('Purchase not found');
+      }
+
+      if (amount > purchase.dueAmount) {
+        throw new Error(`Payment amount cannot exceed due amount of Rs. ${purchase.dueAmount}`);
+      }
+
+      validationData = purchase;
+    }
+
+    // Use transaction with increased timeout for data consistency
     const result = await prisma.$transaction(async (tx) => {
       if (saleId) {
-        // Handle sale payment
-        const sale = await tx.sale.findUnique({
-          where: { id: saleId },
-          include: { customer: true },
-        });
-
-        if (!sale) {
-          throw new Error('Sale not found');
-        }
-
-        if (amount > sale.dueAmount) {
-          throw new Error(`Payment amount cannot exceed due amount of Rs. ${sale.dueAmount}`);
-        }
-
-        const balanceBefore = sale.dueAmount;
-        const newPaidAmount = sale.paidAmount + amount;
-        const newDueAmount = sale.dueAmount - amount;
+        const balanceBefore = validationData.dueAmount;
+        const newPaidAmount = validationData.paidAmount + amount;
+        const newDueAmount = validationData.dueAmount - amount;
         const balanceAfter = newDueAmount;
 
         // Update sale
@@ -94,11 +137,13 @@ export async function POST(request: NextRequest) {
         });
 
         // Update customer balance only if customerId is not null
-        if (sale.customerId && sale.customer) {
+        if (validationData.customerId && validationData.customer) {
           await tx.customer.update({
-            where: { id: sale.customerId },
+            where: { id: validationData.customerId },
             data: {
-              balance: sale.customer.balance - amount,
+              balance: {
+                decrement: amount, // Use atomic decrement
+              },
             },
           });
         }
@@ -119,23 +164,9 @@ export async function POST(request: NextRequest) {
 
         return { sale: updatedSale, paymentHistory };
       } else if (purchaseId) {
-        // Handle purchase payment
-        const purchase = await tx.purchase.findUnique({
-          where: { id: purchaseId },
-          include: { vendor: true },
-        });
-
-        if (!purchase) {
-          throw new Error('Purchase not found');
-        }
-
-        if (amount > purchase.dueAmount) {
-          throw new Error(`Payment amount cannot exceed due amount of Rs. ${purchase.dueAmount}`);
-        }
-
-        const balanceBefore = purchase.dueAmount;
-        const newPaidAmount = purchase.paidAmount + amount;
-        const newDueAmount = purchase.dueAmount - amount;
+        const balanceBefore = validationData.dueAmount;
+        const newPaidAmount = validationData.paidAmount + amount;
+        const newDueAmount = validationData.dueAmount - amount;
         const balanceAfter = newDueAmount;
 
         // Update purchase
@@ -147,11 +178,13 @@ export async function POST(request: NextRequest) {
           },
         });
 
-        // Update vendor balance
+        // Update vendor balance using atomic decrement
         await tx.vendor.update({
-          where: { id: purchase.vendorId },
+          where: { id: validationData.vendorId },
           data: {
-            balance: purchase.vendor.balance - amount,
+            balance: {
+              decrement: amount, // Use atomic decrement
+            },
           },
         });
 
@@ -171,6 +204,9 @@ export async function POST(request: NextRequest) {
 
         return { purchase: updatedPurchase, paymentHistory };
       }
+    }, {
+      maxWait: 10000, // Maximum time to wait for transaction to start (10 seconds)
+      timeout: 20000, // Maximum time for transaction to complete (20 seconds)
     });
 
     return NextResponse.json({
@@ -186,3 +222,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+

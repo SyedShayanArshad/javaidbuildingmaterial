@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { useToast, Button } from '@/components/ui';
+import { useToast, Button, LoadingSpinner } from '@/components/ui';
 
 interface Purchase {
   id: string;
@@ -76,17 +76,29 @@ export default function VendorPaymentPage() {
   };
 
   const fetchUnpaidPurchases = async () => {
-    try {
-      const response = await fetch(`/api/purchases?vendorId=${params.id}`, { credentials: 'include' });
-      const data = await response.json();
-      const unpaidPurchases = data.filter((purchase: Purchase) => purchase.dueAmount > 0);
-      setPurchases(unpaidPurchases);
-    } catch (error) {
-      console.error('Error fetching purchases:', error);
-    } finally {
-      setLoading(false);
+  setLoading(true);
+
+  try {
+    const response = await fetch(
+      `/api/purchases/by-vendor/${params.id}`,
+      {
+        method: 'GET',
+        credentials: 'include',
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Failed to fetch unpaid purchases');
     }
-  };
+    const purchases: Purchase[] = await response.json();
+    setPurchases(purchases);
+  } catch (error) {
+    console.error('Error fetching unpaid purchases:', error);
+    setPurchases([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const fetchPaymentHistory = async () => {
     if (!selectedPurchase) return;
@@ -160,11 +172,13 @@ export default function VendorPaymentPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-slate-600 dark:text-slate-400">Loading...</div>
-      </div>
-    );
+    if (loading) {
+        return (
+          <div className="flex items-center justify-center h-96">
+            <LoadingSpinner size="lg" text="Loading..." />
+          </div>
+        );
+      }
   }
 
   if (!vendor) {

@@ -5,13 +5,14 @@ import { requireAuth, isErrorResponse } from "@/lib/api-auth";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } }
 ) {
+  
   const authResult = await requireAuth(request);
   if (isErrorResponse(authResult)) return authResult;
-
+  
   try {
-    const { id } = await params;
+    const { id } = params;
     const purchase = await prisma.purchase.findUnique({
       where: { id },
       include: {
