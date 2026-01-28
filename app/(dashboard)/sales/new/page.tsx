@@ -83,29 +83,33 @@ export default function NewSalePage() {
 }, []);
 
   useEffect(() => {
-    // Debounced search
-    if (searchQuery.trim().length > 0 && !formData.isWalkIn) {
-      setIsSearching(true);
-      
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
+  if (
+    searchQuery.trim().length > 0 &&
+    !formData.isWalkIn &&
+    !formData.customerId   // 👈 IMPORTANT
+  ) {
+    setIsSearching(true);
 
-      searchTimeoutRef.current = setTimeout(() => {
-        searchCustomers(searchQuery);
-      }, 300);
-    } else {
-      setSearchResults([]);
-      setShowSearchResults(false);
-      setIsSearching(false);
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
     }
 
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
-  }, [searchQuery, formData.isWalkIn]);
+    searchTimeoutRef.current = setTimeout(() => {
+      searchCustomers(searchQuery);
+    }, 300);
+  } else {
+    setSearchResults([]);
+    setShowSearchResults(false);
+    setIsSearching(false);
+  }
+
+  return () => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+  };
+}, [searchQuery, formData.isWalkIn, formData.customerId]);
+
 
   const fetchCustomers = async () => {
     try {
