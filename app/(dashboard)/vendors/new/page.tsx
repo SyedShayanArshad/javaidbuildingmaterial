@@ -24,6 +24,7 @@ export default function NewVendorPage() {
     name: '',
     phone: '',
     address: '',
+    openingBalance: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,6 +113,20 @@ export default function NewVendorPage() {
       placeholder="Enter vendor address"
       value={formData.address}
       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+    />
+  </FormGroup>
+
+  <FormGroup>
+    <Input
+      id="openingBalance"
+      type="number"
+      label="Opening Balance (Optional)"
+      placeholder="0.00"
+      value={formData.openingBalance}
+      onChange={(e) => setFormData({ ...formData, openingBalance: e.target.value })}
+      helperText="If vendor has previous outstanding payable balance, enter it here"
+      min="0"
+      step="0.01"
     />
   </FormGroup>
 </FormSection>

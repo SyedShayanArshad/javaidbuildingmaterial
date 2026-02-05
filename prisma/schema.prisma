@@ -113,6 +113,7 @@ model Purchase {
   paidAmount    Float    @default(0) @map("paid_amount")
   dueAmount     Float    @map("due_amount")
   notes         String?
+  isOpeningBalance Boolean @default(false) @map("is_opening_balance")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
@@ -161,6 +162,7 @@ model Sale {
   notes         String?
   isWalkIn      Boolean  @default(false) @map("is_walk_in")
   walkInCustomerName String? @map("walk_in_customer_name")
+  isOpeningBalance Boolean @default(false) @map("is_opening_balance")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 

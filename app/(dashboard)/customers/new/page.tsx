@@ -25,6 +25,7 @@ export default function NewCustomerPage() {
     name: '',
     phone: '',
     address: '',
+    openingBalance: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -119,6 +120,21 @@ export default function NewCustomerPage() {
                   placeholder="Enter customer address"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                />
+              </FormGroup>
+
+              {/* Row 3: Opening Balance */}
+              <FormGroup>
+                <Input
+                  id="openingBalance"
+                  type="number"
+                  label="Opening Balance (Optional)"
+                  placeholder="0.00"
+                  value={formData.openingBalance}
+                  onChange={(e) => setFormData({ ...formData, openingBalance: e.target.value })}
+                  helperText="If customer has previous outstanding balance, enter it here"
+                  min="0"
+                  step="0.01"
                 />
               </FormGroup>
             </FormSection>
