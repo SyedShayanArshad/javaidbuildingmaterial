@@ -220,7 +220,7 @@ export default function VendorPaymentPage() {
           <div>
             <p className="text-sm text-slate-600 dark:text-slate-400">Total Balance</p>
             <p className={`text-lg font-bold ${vendor.balance > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
-              Rs. {vendor.balance.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+              Rs. {vendor.balance.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
             </p>
           </div>
         </div>
@@ -253,13 +253,13 @@ export default function VendorPaymentPage() {
                     <div className="text-right">
                       <p className="text-sm text-slate-600 dark:text-slate-400">Due Amount</p>
                       <p className="font-bold text-rose-600 dark:text-rose-400">
-                        Rs. {purchase.dueAmount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                        Rs. {purchase.dueAmount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                       </p>
                     </div>
                   </div>
                   <div className="text-sm text-slate-600 dark:text-slate-400">
-                    Total: Rs. {purchase.totalAmount.toLocaleString('en-PK', { minimumFractionDigits: 2 })} | 
-                    Paid: Rs. {purchase.paidAmount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                    Total: Rs. {purchase.totalAmount.toLocaleString('en-PK', { minimumFractionDigits: 1 })} | 
+                    Paid: Rs. {purchase.paidAmount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                   </div>
                 </button>
               ))}
@@ -294,7 +294,7 @@ export default function VendorPaymentPage() {
       onChange={(e) => setPaymentData({ ...paymentData, amount: e.target.value })}
     />
     <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-      Maximum: Rs. {selectedPurchase.dueAmount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+      Maximum: Rs. {selectedPurchase.dueAmount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
     </p>
   </div>
 
@@ -366,7 +366,7 @@ export default function VendorPaymentPage() {
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-semibold text-emerald-600 dark:text-emerald-400">
-                          Rs. {payment.amount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                          Rs. {payment.amount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                         </p>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
                           {new Date(payment.paymentDate).toLocaleDateString('en-PK')} • {payment.paymentMode}
@@ -376,8 +376,8 @@ export default function VendorPaymentPage() {
                         )}
                       </div>
                       <div className="text-right text-xs text-slate-500 dark:text-slate-400">
-                        <p>Due: Rs. {payment.balanceBefore.toFixed(2)}</p>
-                        <p>→ Rs. {payment.balanceAfter.toFixed(2)}</p>
+                        <p>Due: Rs. {payment.balanceBefore.toFixed(1)}</p>
+                        <p>→ Rs. {payment.balanceAfter.toFixed(1)}</p>
                       </div>
                     </div>
                   </div>

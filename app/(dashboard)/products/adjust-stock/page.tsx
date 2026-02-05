@@ -515,3 +515,4 @@ export default function StockAdjustmentPage() {
     </>
   );
 }
+

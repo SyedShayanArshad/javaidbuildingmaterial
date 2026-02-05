@@ -253,7 +253,7 @@ export default function CustomerPaymentPage() {
             >
               Rs.{" "}
               {customer.balance.toLocaleString("en-PK", {
-                minimumFractionDigits: 2,
+                minimumFractionDigits: 1,
               })}
             </p>
           </div>
@@ -298,7 +298,7 @@ export default function CustomerPaymentPage() {
                       <p className="font-bold text-rose-600 dark:text-rose-400">
                         Rs.{" "}
                         {sale.dueAmount.toLocaleString("en-PK", {
-                          minimumFractionDigits: 2,
+                          minimumFractionDigits: 1,
                         })}
                       </p>
                     </div>
@@ -306,11 +306,11 @@ export default function CustomerPaymentPage() {
                   <div className="text-sm text-slate-600 dark:text-slate-400">
                     Total: Rs.{" "}
                     {sale.totalAmount.toLocaleString("en-PK", {
-                      minimumFractionDigits: 2,
+                      minimumFractionDigits: 1,
                     })}{" "}
                     | Paid: Rs.{" "}
                     {sale.paidAmount.toLocaleString("en-PK", {
-                      minimumFractionDigits: 2,
+                      minimumFractionDigits: 1,
                     })}
                   </div>
                 </button>
@@ -356,7 +356,7 @@ export default function CustomerPaymentPage() {
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                     Maximum: Rs.{" "}
                     {selectedSale.dueAmount.toLocaleString("en-PK", {
-                      minimumFractionDigits: 2,
+                      minimumFractionDigits: 1,
                     })}
                   </p>
                 </div>
@@ -448,7 +448,7 @@ export default function CustomerPaymentPage() {
                         <p className="font-semibold text-emerald-600 dark:text-emerald-400">
                           Rs.{" "}
                           {payment.amount.toLocaleString("en-PK", {
-                            minimumFractionDigits: 2,
+                            minimumFractionDigits: 1,
                           })}
                         </p>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
@@ -464,8 +464,8 @@ export default function CustomerPaymentPage() {
                         )}
                       </div>
                       <div className="text-right text-xs text-slate-500 dark:text-slate-400">
-                        <p>Due: Rs. {payment.balanceBefore.toFixed(2)}</p>
-                        <p>→ Rs. {payment.balanceAfter.toFixed(2)}</p>
+                        <p>Due: Rs. {payment.balanceBefore.toFixed(1)}</p>
+                        <p>→ Rs. {payment.balanceAfter.toFixed(1)}</p>
                       </div>
                     </div>
                   </div>

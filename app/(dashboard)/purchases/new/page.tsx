@@ -194,7 +194,7 @@ export default function NewPurchasePage() {
                 <option value="">-- Select Vendor --</option>
                 {vendors.map((vendor) => (
                   <option key={vendor.id} value={vendor.id}>
-                    {vendor.name} (Balance: Rs. {vendor.balance.toLocaleString('en-PK', { minimumFractionDigits: 2 })})
+                    {vendor.name} (Balance: Rs. {vendor.balance.toLocaleString('en-PK', { minimumFractionDigits: 1 })})
                   </option>
                 ))}
               </select>
@@ -202,7 +202,7 @@ export default function NewPurchasePage() {
                 <div className="mt-2 p-2 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded text-sm">
                   <span className="font-medium text-slate-700 dark:text-slate-300">Previous Balance: </span>
                   <span className={selectedVendor.balance > 0 ? 'text-rose-600 dark:text-rose-400 font-semibold' : 'text-slate-700 dark:text-slate-300'}>
-                    Rs. {selectedVendor.balance.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                    Rs. {selectedVendor.balance.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                   </span>
                 </div>
               )}
@@ -295,7 +295,7 @@ export default function NewPurchasePage() {
                         <input
                           type="text"
                           className="input bg-slate-100 dark:bg-slate-900"
-                          value={`Rs. ${item.amount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}`}
+                          value={`Rs. ${item.amount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}`}
                           disabled
                         />
                       </div>
@@ -370,23 +370,23 @@ export default function NewPurchasePage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Total Amount</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">Rs. {totalAmount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">Rs. {totalAmount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}</p>
               </div>
               <div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Paid Amount</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Rs. {paidAmount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}</p>
+                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Rs. {paidAmount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}</p>
               </div>
               <div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Due Amount</p>
                 <p className={`text-2xl font-bold ${dueAmount > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
-                  Rs. {dueAmount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                  Rs. {dueAmount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                 </p>
               </div>
               {selectedVendor && (
                 <div>
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">New Balance</p>
                   <p className={`text-2xl font-bold ${(selectedVendor.balance + dueAmount) > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
-                    Rs. {(selectedVendor.balance + dueAmount).toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                    Rs. {(selectedVendor.balance + dueAmount).toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                   </p>
                 </div>
               )}
@@ -411,3 +411,6 @@ export default function NewPurchasePage() {
     </>
   );
 }
+
+
+

@@ -91,7 +91,7 @@ export default function VendorsPage() {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Payables</p>
               <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                Rs. {totalPayable.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                Rs. {totalPayable.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
               </p>
             </div>
             <div className="bg-red-100 dark:bg-red-900/30 p-3 rounded-xl">
@@ -165,7 +165,7 @@ export default function VendorsPage() {
                         ? 'text-green-600 dark:text-green-400'
                         : 'text-gray-900 dark:text-gray-100'
                     }`}>
-                      Rs. {Math.abs(vendor.balance).toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                      Rs. {Math.abs(vendor.balance).toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                     </p>
                     {vendor.balance > 0 && (
                       <Badge variant="danger" size="sm">Payable</Badge>
@@ -221,3 +221,6 @@ export default function VendorsPage() {
     </div>
   );
 }
+
+
+

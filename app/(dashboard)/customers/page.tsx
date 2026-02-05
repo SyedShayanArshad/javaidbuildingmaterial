@@ -91,7 +91,7 @@ export default function CustomersPage() {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Receivables</p>
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                Rs. {totalReceivable.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                Rs. {totalReceivable.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
               </p>
             </div>
             <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-xl">
@@ -165,7 +165,7 @@ export default function CustomersPage() {
                         ? 'text-red-600 dark:text-red-400'
                         : 'text-gray-900 dark:text-gray-100'
                     }`}>
-                      Rs. {Math.abs(customer.balance).toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                      Rs. {Math.abs(customer.balance).toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                     </p>
                     {customer.balance > 0 && (
                       <Badge variant="success" size="sm">Receivable</Badge>
@@ -221,3 +221,6 @@ export default function CustomersPage() {
     </div>
   );
 }
+
+
+

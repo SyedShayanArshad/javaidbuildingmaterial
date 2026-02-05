@@ -139,7 +139,7 @@ export default function DashboardPage() {
             </div>
             <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Accounts Payable</p>
             <p className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Rs. {(stats?.vendorBalance || 0).toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+              Rs. {(stats?.vendorBalance || 0).toLocaleString('en-PK', { minimumFractionDigits: 1 })}
             </p>
             <p className="text-xs text-slate-500 dark:text-slate-400">Amount owed to vendors</p>
           </Card>
@@ -153,7 +153,7 @@ export default function DashboardPage() {
             </div>
             <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Accounts Receivable</p>
             <p className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Rs. {(stats?.customerBalance || 0).toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+              Rs. {(stats?.customerBalance || 0).toLocaleString('en-PK', { minimumFractionDigits: 1 })}
             </p>
             <p className="text-xs text-slate-500 dark:text-slate-400">Amount owed by customers</p>
           </Card>
@@ -167,7 +167,7 @@ export default function DashboardPage() {
             </div>
             <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Today's Sales</p>
             <p className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Rs. {(stats?.todaySales || 0).toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+              Rs. {(stats?.todaySales || 0).toLocaleString('en-PK', { minimumFractionDigits: 1 })}
             </p>
             <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
               <TrendingUp className="w-3 h-3" />
@@ -184,7 +184,7 @@ export default function DashboardPage() {
             </div>
             <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Today's Purchases</p>
             <p className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Rs. {(stats?.todayPurchases || 0).toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+              Rs. {(stats?.todayPurchases || 0).toLocaleString('en-PK', { minimumFractionDigits: 1 })}
             </p>
             <div className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
               <DollarSign className="w-3 h-3" />
@@ -250,3 +250,6 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+
+

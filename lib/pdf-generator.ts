@@ -123,7 +123,7 @@ export function generateSalesInvoice(data: InvoiceData) {
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...COLORS.warning);
     doc.text(
-      `Previous Balance: Rs. ${data.customerPreviousBalance.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
+      `Previous Balance: Rs. ${data.customerPreviousBalance.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
       PAGE.left,
       cursorY
     );
@@ -142,8 +142,8 @@ export function generateSalesInvoice(data: InvoiceData) {
     body: data.items.map((i) => [
       i.productName,
       `${i.quantity} ${i.unit}`,
-      `Rs. ${i.unitPrice.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
-      `Rs. ${i.totalPrice.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
+      `Rs. ${i.unitPrice.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
+      `Rs. ${i.totalPrice.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
     ]),
     theme: "grid",
     styles: {
@@ -172,7 +172,7 @@ export function generateSalesInvoice(data: InvoiceData) {
 
   doc.text("Total:", rightX - 60, cursorY);
   doc.text(
-    `Rs. ${data.totalAmount.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
+    `Rs. ${data.totalAmount.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
     rightX,
     cursorY,
     { align: "right" }
@@ -182,7 +182,7 @@ export function generateSalesInvoice(data: InvoiceData) {
   doc.text("Paid:", rightX - 60, cursorY);
   doc.setTextColor(...COLORS.success);
   doc.text(
-    `Rs. ${data.paidAmount.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
+    `Rs. ${data.paidAmount.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
     rightX,
     cursorY,
     { align: "right" }
@@ -193,7 +193,7 @@ export function generateSalesInvoice(data: InvoiceData) {
   doc.setTextColor(...COLORS.danger);
   doc.text("Balance Due:", rightX - 60, cursorY);
   doc.text(
-    `Rs. ${data.dueAmount.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
+    `Rs. ${data.dueAmount.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
     rightX,
     cursorY,
     { align: "right" }
@@ -211,9 +211,9 @@ export function generateSalesInvoice(data: InvoiceData) {
       body: data.paymentHistory.map((p) => [
         new Date(p.paymentDate).toLocaleDateString("en-PK"),
         p.paymentMode,
-        `Rs. ${p.amount.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
-        `Rs. ${p.balanceBefore.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
-        `Rs. ${p.balanceAfter.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
+        `Rs. ${p.amount.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
+        `Rs. ${p.balanceBefore.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
+        `Rs. ${p.balanceAfter.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
       ]),
       styles: { fontSize: 9 },
       headStyles: {
@@ -318,7 +318,7 @@ export function generatePurchaseOrder(data: PurchaseInvoiceData) {
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...COLORS.warning);
     doc.text(
-      `Previous Balance: Rs. ${data.vendorPreviousBalance.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
+      `Previous Balance: Rs. ${data.vendorPreviousBalance.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
       PAGE.left,
       cursorY
     );
@@ -337,8 +337,8 @@ export function generatePurchaseOrder(data: PurchaseInvoiceData) {
     body: data.items.map((i) => [
       i.productName,
       `${i.quantity} ${i.unit}`,
-      `Rs. ${i.unitPrice.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
-      `Rs. ${i.totalPrice.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
+      `Rs. ${i.unitPrice.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
+      `Rs. ${i.totalPrice.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
     ]),
     theme: "grid",
     styles: {
@@ -367,7 +367,7 @@ export function generatePurchaseOrder(data: PurchaseInvoiceData) {
 
   doc.text("Total:", rightX - 60, cursorY);
   doc.text(
-    `Rs. ${data.totalAmount.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
+    `Rs. ${data.totalAmount.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
     rightX,
     cursorY,
     { align: "right" }
@@ -378,7 +378,7 @@ export function generatePurchaseOrder(data: PurchaseInvoiceData) {
     doc.text("Paid:", rightX - 60, cursorY);
     doc.setTextColor(...COLORS.success);
     doc.text(
-      `Rs. ${data.paidAmount.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
+      `Rs. ${data.paidAmount.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
       rightX,
       cursorY,
       { align: "right" }
@@ -390,7 +390,7 @@ export function generatePurchaseOrder(data: PurchaseInvoiceData) {
   doc.setTextColor(...COLORS.danger);
   doc.text("Balance Payable:", rightX - 60, cursorY);
   doc.text(
-    `Rs. ${data.dueAmount.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
+    `Rs. ${data.dueAmount.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
     rightX,
     cursorY,
     { align: "right" }
@@ -408,9 +408,9 @@ export function generatePurchaseOrder(data: PurchaseInvoiceData) {
       body: data.paymentHistory.map((p) => [
         new Date(p.paymentDate).toLocaleDateString("en-PK"),
         p.paymentMode,
-        `Rs. ${p.amount.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
-        `Rs. ${p.balanceBefore.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
-        `Rs. ${p.balanceAfter.toLocaleString("en-PK", { minimumFractionDigits: 2 })}`,
+        `Rs. ${p.amount.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
+        `Rs. ${p.balanceBefore.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
+        `Rs. ${p.balanceAfter.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
       ]),
       styles: { fontSize: 9 },
       headStyles: {

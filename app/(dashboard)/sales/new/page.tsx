@@ -383,7 +383,7 @@ export default function NewSalePage() {
                             <div className="text-sm text-slate-600 dark:text-slate-400">{customer.phone}</div>
                           )}
                           <div className={`text-sm ${customer.balance > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-600 dark:text-slate-400'}`}>
-                            Balance: Rs. {customer.balance.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                            Balance: Rs. {customer.balance.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                           </div>
                         </button>
                       ))}
@@ -405,7 +405,7 @@ export default function NewSalePage() {
                       <div>
                         <span className="font-medium text-slate-700 dark:text-slate-300">Previous Balance: </span>
                         <span className={selectedCustomer.balance > 0 ? 'text-rose-600 dark:text-rose-400 font-semibold' : 'text-slate-700 dark:text-slate-300'}>
-                          Rs. {selectedCustomer.balance.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                          Rs. {selectedCustomer.balance.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                         </span>
                       </div>
                     </div>
@@ -525,7 +525,7 @@ export default function NewSalePage() {
                         <input
                           type="text"
                           className="input bg-slate-100 dark:bg-slate-900"
-                          value={`Rs. ${item.amount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}`}
+                          value={`Rs. ${item.amount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}`}
                           disabled
                         />
                       </div>
@@ -607,23 +607,23 @@ export default function NewSalePage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Total Amount</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">Rs. {totalAmount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">Rs. {totalAmount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}</p>
               </div>
               <div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Received Amount</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Rs. {receivedAmount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}</p>
+                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Rs. {receivedAmount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}</p>
               </div>
               <div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Due Amount</p>
                 <p className={`text-2xl font-bold ${dueAmount > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
-                  Rs. {dueAmount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                  Rs. {dueAmount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                 </p>
               </div>
               {selectedCustomer && (
                 <div>
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">New Balance</p>
                   <p className={`text-2xl font-bold ${(selectedCustomer.balance + dueAmount) > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
-                    Rs. {(selectedCustomer.balance + dueAmount).toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                    Rs. {(selectedCustomer.balance + dueAmount).toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                   </p>
                 </div>
               )}
@@ -648,3 +648,6 @@ export default function NewSalePage() {
     </>
   );
 }
+
+
+

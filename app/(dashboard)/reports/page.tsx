@@ -398,7 +398,7 @@ useEffect(() => {
                   {(typeof profitLoss.totalRevenue === "number"
                     ? profitLoss.totalRevenue
                     : 0
-                  ).toLocaleString("en-PK", { minimumFractionDigits: 2 })}
+                  ).toLocaleString("en-PK", { minimumFractionDigits: 1 })}
                 </p>
               </div>
               <div className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/30 dark:to-rose-800/20 p-6 rounded-xl border border-rose-200 dark:border-rose-700">
@@ -410,7 +410,7 @@ useEffect(() => {
                   {(typeof profitLoss.totalCost === "number"
                     ? profitLoss.totalCost
                     : 0
-                  ).toLocaleString("en-PK", { minimumFractionDigits: 2 })}
+                  ).toLocaleString("en-PK", { minimumFractionDigits: 1 })}
                 </p>
               </div>
               <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-900/30 dark:to-cyan-800/20 p-6 rounded-xl border border-cyan-200 dark:border-cyan-700">
@@ -422,7 +422,7 @@ useEffect(() => {
                   {(typeof profitLoss.totalProfit === "number"
                     ? profitLoss.totalProfit
                     : 0
-                  ).toLocaleString("en-PK", { minimumFractionDigits: 2 })}
+                  ).toLocaleString("en-PK", { minimumFractionDigits: 1 })}
                 </p>
               </div>
               <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/30 dark:to-teal-800/20 p-6 rounded-xl border border-teal-200 dark:border-teal-700">
@@ -664,7 +664,7 @@ useEffect(() => {
                           <p className="text-2xl font-bold text-rose-600 dark:text-rose-400">
                             Rs.{" "}
                             {totalPayable.toLocaleString("en-PK", {
-                              minimumFractionDigits: 2,
+                              minimumFractionDigits: 1,
                             })}
                           </p>
                         </div>
@@ -685,7 +685,7 @@ useEffect(() => {
                           <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                             Rs.{" "}
                             {totalReceivable.toLocaleString("en-PK", {
-                              minimumFractionDigits: 2,
+                              minimumFractionDigits: 1,
                             })}
                           </p>
                         </div>
@@ -755,7 +755,7 @@ useEffect(() => {
                                   {parseFloat(
                                     party.balance.toString(),
                                   ).toLocaleString("en-PK", {
-                                    minimumFractionDigits: 2,
+                                    minimumFractionDigits: 1,
                                   })}
                                 </span>
                               </TableCell>
@@ -811,8 +811,8 @@ useEffect(() => {
                             ? (
                                 (product.profit / product.revenue) *
                                 100
-                              ).toFixed(2)
-                            : "0.00";
+                              ).toFixed(1)
+                            : "0.0";
                         return (
                           <TableRow key={product.productId}>
                             <TableCell className="font-medium">
@@ -829,19 +829,19 @@ useEffect(() => {
                             <TableCell className="text-right font-semibold">
                               Rs.{" "}
                               {product.revenue.toLocaleString("en-PK", {
-                                minimumFractionDigits: 2,
+                                minimumFractionDigits: 1,
                               })}
                             </TableCell>
                             <TableCell className="text-right text-rose-600 dark:text-rose-400">
                               Rs.{" "}
                               {product.cost.toLocaleString("en-PK", {
-                                minimumFractionDigits: 2,
+                                minimumFractionDigits: 1,
                               })}
                             </TableCell>
                             <TableCell className="text-right font-semibold text-emerald-600 dark:text-emerald-400">
                               Rs.{" "}
                               {product.profit.toLocaleString("en-PK", {
-                                minimumFractionDigits: 2,
+                                minimumFractionDigits: 1,
                               })}
                             </TableCell>
                             <TableCell className="text-right">
@@ -910,13 +910,13 @@ useEffect(() => {
                           <TableCell className="text-right font-semibold">
                             Rs.{" "}
                             {customer.totalSales.toLocaleString("en-PK", {
-                              minimumFractionDigits: 2,
+                              minimumFractionDigits: 1,
                             })}
                           </TableCell>
                           <TableCell className="text-right text-emerald-600 dark:text-emerald-400">
                             Rs.{" "}
                             {customer.totalPaid.toLocaleString("en-PK", {
-                              minimumFractionDigits: 2,
+                              minimumFractionDigits: 1,
                             })}
                           </TableCell>
                           <TableCell className="text-right">
@@ -929,7 +929,7 @@ useEffect(() => {
                             >
                               Rs.{" "}
                               {customer.totalDue.toLocaleString("en-PK", {
-                                minimumFractionDigits: 2,
+                                minimumFractionDigits: 1,
                               })}
                             </span>
                           </TableCell>
@@ -1000,13 +1000,13 @@ useEffect(() => {
                           <TableCell className="text-right font-semibold">
                             Rs.{" "}
                             {vendor.totalPurchases.toLocaleString("en-PK", {
-                              minimumFractionDigits: 2,
+                              minimumFractionDigits: 1,
                             })}
                           </TableCell>
                           <TableCell className="text-right text-emerald-600 dark:text-emerald-400">
                             Rs.{" "}
                             {vendor.totalPaid.toLocaleString("en-PK", {
-                              minimumFractionDigits: 2,
+                              minimumFractionDigits: 1,
                             })}
                           </TableCell>
                           <TableCell className="text-right">
@@ -1019,7 +1019,7 @@ useEffect(() => {
                             >
                               Rs.{" "}
                               {vendor.totalDue.toLocaleString("en-PK", {
-                                minimumFractionDigits: 2,
+                                minimumFractionDigits: 1,
                               })}
                             </span>
                           </TableCell>
@@ -1084,7 +1084,7 @@ useEffect(() => {
                             Rs.{" "}
                             {walkInSales.summary.totalSales.toLocaleString(
                               "en-PK",
-                              { minimumFractionDigits: 2 }
+                              { minimumFractionDigits: 1 }
                             )}
                           </p>
                         </div>
@@ -1107,7 +1107,7 @@ useEffect(() => {
                                 walkInSales.summary.salesCount
                               : 0
                             ).toLocaleString("en-PK", {
-                              minimumFractionDigits: 2,
+                              minimumFractionDigits: 1,
                             })}
                           </p>
                         </div>
@@ -1154,13 +1154,13 @@ useEffect(() => {
                             <TableCell className="text-right font-semibold">
                               Rs.{" "}
                               {sale.totalAmount.toLocaleString("en-PK", {
-                                minimumFractionDigits: 2,
+                                minimumFractionDigits: 1,
                               })}
                             </TableCell>
                             <TableCell className="text-right text-emerald-600 dark:text-emerald-400">
                               Rs.{" "}
                               {sale.paidAmount.toLocaleString("en-PK", {
-                                minimumFractionDigits: 2,
+                                minimumFractionDigits: 1,
                               })}
                             </TableCell>
                             <TableCell className="text-center">
@@ -1220,7 +1220,7 @@ useEffect(() => {
                           Rs.{" "}
                           {salesComparison.walkIn.total.toLocaleString(
                             "en-PK",
-                            { minimumFractionDigits: 2 }
+                            { minimumFractionDigits: 1 }
                           )}
                         </span>
                       </div>
@@ -1232,7 +1232,7 @@ useEffect(() => {
                           Rs.{" "}
                           {salesComparison.walkIn.average.toLocaleString(
                             "en-PK",
-                            { minimumFractionDigits: 2 }
+                            { minimumFractionDigits: 1 }
                           )}
                         </span>
                       </div>
@@ -1266,7 +1266,7 @@ useEffect(() => {
                           Rs.{" "}
                           {salesComparison.registered.total.toLocaleString(
                             "en-PK",
-                            { minimumFractionDigits: 2 }
+                            { minimumFractionDigits: 1 }
                           )}
                         </span>
                       </div>
@@ -1278,7 +1278,7 @@ useEffect(() => {
                           Rs.{" "}
                           {salesComparison.registered.average.toLocaleString(
                             "en-PK",
-                            { minimumFractionDigits: 2 }
+                            { minimumFractionDigits: 1 }
                           )}
                         </span>
                       </div>
@@ -1413,3 +1413,5 @@ useEffect(() => {
     </>
   );
 }
+
+

@@ -164,7 +164,7 @@ const handlePrintSale = async (saleId: string) => {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Revenue</p>
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                Rs. {totalSales.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                Rs. {totalSales.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
               </p>
             </div>
             <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-xl">
@@ -178,7 +178,7 @@ const handlePrintSale = async (saleId: string) => {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Paid</p>
               <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                Rs. {sales.reduce((sum, s) => sum + s.paidAmount, 0).toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                Rs. {sales.reduce((sum, s) => sum + s.paidAmount, 0).toLocaleString('en-PK', { minimumFractionDigits: 1 })}
               </p>
             </div>
             <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-xl">
@@ -192,7 +192,7 @@ const handlePrintSale = async (saleId: string) => {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Due</p>
               <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                Rs. {totalDue.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                Rs. {totalDue.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
               </p>
             </div>
             <div className="bg-red-100 dark:bg-red-900/30 p-3 rounded-xl">
@@ -264,15 +264,15 @@ const handlePrintSale = async (saleId: string) => {
                     </div>
                   </TableCell>
                   <TableCell className="text-right font-medium">
-                    Rs. {sale.totalAmount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                    Rs. {sale.totalAmount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                   </TableCell>
                   <TableCell className="text-right text-green-600 dark:text-green-400 font-medium">
-                    Rs. {sale.paidAmount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                    Rs. {sale.paidAmount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                   </TableCell>
                   <TableCell className="text-right">
                     {sale.dueAmount > 0 ? (
                       <span className="font-semibold text-red-600 dark:text-red-400">
-                        Rs. {sale.dueAmount.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                        Rs. {sale.dueAmount.toLocaleString('en-PK', { minimumFractionDigits: 1 })}
                       </span>
                     ) : (
                       <Badge variant="success" size="sm">Paid</Badge>
@@ -328,3 +328,5 @@ const handlePrintSale = async (saleId: string) => {
     </div>
   );
 }
+
+

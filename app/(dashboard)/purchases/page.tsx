@@ -144,7 +144,7 @@ export default function PurchasesPage() {
                 <p className="text-2xl font-bold mt-2">
                   Rs.{" "}
                   {totalPurchases.toLocaleString("en-PK", {
-                    minimumFractionDigits: 2,
+                    minimumFractionDigits: 1,
                   })}
                 </p>
               </div>
@@ -163,7 +163,7 @@ export default function PurchasesPage() {
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">
                   Rs.{" "}
                   {totalPaid.toLocaleString("en-PK", {
-                    minimumFractionDigits: 2,
+                    minimumFractionDigits: 1,
                   })}
                 </p>
               </div>
@@ -182,7 +182,7 @@ export default function PurchasesPage() {
                 <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-2">
                   Rs.{" "}
                   {totalDue.toLocaleString("en-PK", {
-                    minimumFractionDigits: 2,
+                    minimumFractionDigits: 1,
                   })}
                 </p>
               </div>
@@ -264,14 +264,14 @@ export default function PurchasesPage() {
                     <TableCell className="text-right font-semibold">
                       Rs.{" "}
                       {purchase.totalAmount.toLocaleString("en-PK", {
-                        minimumFractionDigits: 2,
+                        minimumFractionDigits: 1,
                       })}
                     </TableCell>
 
                     <TableCell className="text-right text-green-600">
                       Rs.{" "}
                       {purchase.paidAmount.toLocaleString("en-PK", {
-                        minimumFractionDigits: 2,
+                        minimumFractionDigits: 1,
                       })}
                     </TableCell>
 
@@ -285,7 +285,7 @@ export default function PurchasesPage() {
                       >
                         Rs.{" "}
                         {purchase.dueAmount.toLocaleString("en-PK", {
-                          minimumFractionDigits: 2,
+                          minimumFractionDigits: 1,
                         })}
                       </span>
                     </TableCell>
@@ -328,3 +328,6 @@ export default function PurchasesPage() {
     </>
   );
 }
+
+
+

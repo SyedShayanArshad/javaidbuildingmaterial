@@ -143,7 +143,7 @@ async function profitLoss(dateFilter?: any) {
     totalRevenue: revenue,
     totalCost: cost,
     totalProfit: profit,
-    profitMargin: revenue ? ((profit / revenue) * 100).toFixed(2) : "0.00",
+    profitMargin: revenue ? ((profit / revenue) * 100).toFixed(1) : "0.0",
     salesCount: new Set(saleItems.map((s) => s.saleId)).size,
   });
 }

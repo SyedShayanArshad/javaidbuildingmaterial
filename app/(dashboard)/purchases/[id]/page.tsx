@@ -265,14 +265,14 @@ export default function PurchaseDetailPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-slate-900 dark:text-slate-100">
                     Rs.{" "}
                     {item.unitPrice.toLocaleString("en-PK", {
-                      minimumFractionDigits: 2,
+                      minimumFractionDigits: 1,
                     })}
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-slate-900 dark:text-slate-100">
                     Rs.{" "}
                     {item.totalPrice.toLocaleString("en-PK", {
-                      minimumFractionDigits: 2,
+                      minimumFractionDigits: 1,
                     })}
                   </td>
                 </tr>
@@ -291,7 +291,7 @@ export default function PurchaseDetailPage() {
           <div className="text-2xl font-bold text-slate-900 dark:text-white">
             Rs.{" "}
             {purchase.totalAmount.toLocaleString("en-PK", {
-              minimumFractionDigits: 2,
+              minimumFractionDigits: 1,
             })}
           </div>
         </div>
@@ -302,7 +302,7 @@ export default function PurchaseDetailPage() {
           <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
             Rs.{" "}
             {purchase.paidAmount.toLocaleString("en-PK", {
-              minimumFractionDigits: 2,
+              minimumFractionDigits: 1,
             })}
           </div>
         </div>
@@ -315,7 +315,7 @@ export default function PurchaseDetailPage() {
           >
             Rs.{" "}
             {purchase.dueAmount.toLocaleString("en-PK", {
-              minimumFractionDigits: 2,
+              minimumFractionDigits: 1,
             })}
           </div>
         </div>

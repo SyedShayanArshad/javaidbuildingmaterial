@@ -226,7 +226,7 @@ export default function SaleDetailPage() {
             Balance:{" "}
             <span className="font-semibold text-emerald-600 text-lg">
               {sale.customer?.balance?.toLocaleString("en-PK", {
-                minimumFractionDigits: 2,
+                minimumFractionDigits: 1,
               }) ?? "0.00"}
             </span>
           </div>
@@ -268,14 +268,14 @@ export default function SaleDetailPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
                     Rs.{" "}
                     {item.unitPrice.toLocaleString("en-PK", {
-                      minimumFractionDigits: 2,
+                      minimumFractionDigits: 1,
                     })}
                   </td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium">
                     Rs.{" "}
                     {item.totalPrice.toLocaleString("en-PK", {
-                      minimumFractionDigits: 2,
+                      minimumFractionDigits: 1,
                     })}
                   </td>
                 </tr>
@@ -294,7 +294,7 @@ export default function SaleDetailPage() {
           <div className="text-2xl font-bold text-slate-900 dark:text-white">
             Rs.{" "}
             {sale.totalAmount.toLocaleString("en-PK", {
-              minimumFractionDigits: 2,
+              minimumFractionDigits: 1,
             })}
           </div>
         </div>
@@ -305,7 +305,7 @@ export default function SaleDetailPage() {
           <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
             Rs.{" "}
             {sale.paidAmount.toLocaleString("en-PK", {
-              minimumFractionDigits: 2,
+              minimumFractionDigits: 1,
             })}
           </div>
         </div>
@@ -318,7 +318,7 @@ export default function SaleDetailPage() {
           >
             Rs.{" "}
             {sale.dueAmount.toLocaleString("en-PK", {
-              minimumFractionDigits: 2,
+              minimumFractionDigits: 1,
             })}
           </div>
         </div>
