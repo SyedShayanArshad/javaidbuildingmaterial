@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { vendorId, purchaseDate, paidAmount, paymentMode, notes, items } =
+    const { vendorId, purchaseDate, paidAmount, paymentMode, notes, items, additionalCharges, chargesDescription } =
       body;
 
     if (!vendorId || !items || items.length === 0) {
@@ -46,11 +46,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate total
-    const totalAmount = items.reduce(
+    // Calculate subtotal from items
+    const subtotal = items.reduce(
       (sum: number, item: any) => sum + item.quantity * item.rate,
       0,
     );
+    const charges = parseFloat(additionalCharges) || 0;
+    const totalAmount = subtotal + charges;
     const paid = parseFloat(paidAmount) || 0;
     const due = totalAmount - paid;
 
@@ -68,6 +70,9 @@ export async function POST(request: NextRequest) {
       vendorId,
       invoiceNumber,
       purchaseDate: new Date(purchaseDate),
+      subtotal,
+      additionalCharges: charges,
+      chargesDescription: chargesDescription || null,
       totalAmount,
       paidAmount: paid,
       dueAmount: due,

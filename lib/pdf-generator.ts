@@ -27,6 +27,9 @@ interface InvoiceData {
   customerPreviousBalance?: number;
   isWalkIn?: boolean;
   items: InvoiceItem[];
+  subtotal: number;
+  additionalCharges?: number;
+  chargesDescription?: string;
   totalAmount: number;
   paidAmount: number;
   dueAmount: number;
@@ -170,6 +173,32 @@ export function generateSalesInvoice(data: InvoiceData) {
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
 
+  // Show subtotal
+  doc.text("Subtotal:", rightX - 60, cursorY);
+  doc.text(
+    `Rs. ${data.subtotal.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
+    rightX,
+    cursorY,
+    { align: "right" }
+  );
+
+  // Show additional charges if exists
+  if (data.additionalCharges && data.additionalCharges > 0) {
+    cursorY += 6;
+    const chargeLabel = data.chargesDescription ? `Additional Charges (${data.chargesDescription}):` : "Additional Charges:";
+    doc.text(chargeLabel, rightX - 60, cursorY);
+    doc.setTextColor(...COLORS.warning);
+    doc.text(
+      `Rs. ${data.additionalCharges.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
+      rightX,
+      cursorY,
+      { align: "right" }
+    );
+    doc.setTextColor(0, 0, 0);
+  }
+
+  cursorY += 8;
+  doc.setFont("helvetica", "bold");
   doc.text("Total:", rightX - 60, cursorY);
   doc.text(
     `Rs. ${data.totalAmount.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
@@ -178,7 +207,8 @@ export function generateSalesInvoice(data: InvoiceData) {
     { align: "right" }
   );
 
-  cursorY += 6;
+  cursorY += 8;
+  doc.setFont("helvetica", "normal");
   doc.text("Paid:", rightX - 60, cursorY);
   doc.setTextColor(...COLORS.success);
   doc.text(
@@ -262,6 +292,9 @@ interface PurchaseInvoiceData {
   vendorPhone?: string;
   vendorPreviousBalance?: number;
   items: InvoiceItem[];
+  subtotal: number;
+  additionalCharges?: number;
+  chargesDescription?: string;
   totalAmount: number;
   paidAmount?: number;
   dueAmount: number;
@@ -365,6 +398,32 @@ export function generatePurchaseOrder(data: PurchaseInvoiceData) {
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
 
+  // Show subtotal
+  doc.text("Subtotal:", rightX - 60, cursorY);
+  doc.text(
+    `Rs. ${data.subtotal.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
+    rightX,
+    cursorY,
+    { align: "right" }
+  );
+
+  // Show additional charges if exists
+  if (data.additionalCharges && data.additionalCharges > 0) {
+    cursorY += 6;
+    const chargeLabel = data.chargesDescription ? `Additional Charges (${data.chargesDescription}):` : "Additional Charges:";
+    doc.text(chargeLabel, rightX - 60, cursorY);
+    doc.setTextColor(...COLORS.warning);
+    doc.text(
+      `Rs. ${data.additionalCharges.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,
+      rightX,
+      cursorY,
+      { align: "right" }
+    );
+    doc.setTextColor(0, 0, 0);
+  }
+
+  cursorY += 8;
+  doc.setFont("helvetica", "bold");
   doc.text("Total:", rightX - 60, cursorY);
   doc.text(
     `Rs. ${data.totalAmount.toLocaleString("en-PK", { minimumFractionDigits: 1 })}`,

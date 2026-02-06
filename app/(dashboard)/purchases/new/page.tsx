@@ -43,6 +43,8 @@ export default function NewPurchasePage() {
     paidAmount: '',
     paymentMode: 'CASH',
     notes: '',
+    additionalCharges: '',
+    chargesDescription: '',
   });
 
   const [items, setItems] = useState<PurchaseItem[]>([
@@ -100,7 +102,9 @@ export default function NewPurchasePage() {
     setItems(newItems);
   };
 
-  const totalAmount = items.reduce((sum, item) => sum + item.amount, 0);
+  const subtotal = items.reduce((sum, item) => sum + item.amount, 0);
+  const additionalCharges = parseFloat(formData.additionalCharges) || 0;
+  const totalAmount = subtotal + additionalCharges;
   const paidAmount = parseFloat(formData.paidAmount) || 0;
   const dueAmount = totalAmount - paidAmount;
   const selectedVendor = vendors.find(v => v.id === formData.vendorId);
@@ -317,6 +321,42 @@ export default function NewPurchasePage() {
             </div>
           </div>
 
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-6 mb-8">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+              Additional Charges (Optional)
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="additionalCharges" className="label">
+                  Additional Charges Amount
+                </label>
+                <input
+                  id="additionalCharges"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  className="input"
+                  placeholder="0.00 (e.g., transport, loading)"
+                  value={formData.additionalCharges}
+                  onChange={(e) => setFormData({ ...formData, additionalCharges: e.target.value })}
+                />
+              </div>
+              <div>
+                <label htmlFor="chargesDescription" className="label">
+                  Charges Description
+                </label>
+                <input
+                  id="chargesDescription"
+                  type="text"
+                  className="input"
+                  placeholder="e.g., Transport + Loading charges"
+                  value={formData.chargesDescription}
+                  onChange={(e) => setFormData({ ...formData, chargesDescription: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div>
               <label htmlFor="paidAmount" className="label">
@@ -367,6 +407,24 @@ export default function NewPurchasePage() {
           </div>
 
           <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-6 mb-6">
+            <div className="space-y-3 mb-4">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-600 dark:text-slate-400">Subtotal (Products)</span>
+                <span className="font-semibold text-slate-900 dark:text-white">Rs. {subtotal.toLocaleString('en-PK', { minimumFractionDigits: 1 })}</span>
+              </div>
+              {additionalCharges > 0 && (
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-slate-600 dark:text-slate-400">
+                    Additional Charges
+                    {formData.chargesDescription && (
+                      <span className="text-xs ml-1">({formData.chargesDescription})</span>
+                    )}
+                  </span>
+                  <span className="font-semibold text-amber-600 dark:text-amber-400">+ Rs. {additionalCharges.toLocaleString('en-PK', { minimumFractionDigits: 1 })}</span>
+                </div>
+              )}
+              <div className="border-t border-slate-200 dark:border-slate-700 pt-3"></div>
+            </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Total Amount</p>

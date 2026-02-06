@@ -36,6 +36,9 @@ interface Purchase {
     balance: number;
   };
   purchaseDate: string;
+  subtotal: number;
+  additionalCharges: number;
+  chargesDescription: string | null;
   totalAmount: number;
   paidAmount: number;
   dueAmount: number;
@@ -100,6 +103,9 @@ export default function PurchaseDetailPage() {
       unitPrice: item.unitPrice,
       totalPrice: item.totalPrice,
     })),
+    subtotal: purchase!.subtotal,
+    additionalCharges: purchase!.additionalCharges,
+    chargesDescription: purchase!.chargesDescription || undefined,
     totalAmount: purchase!.totalAmount,
     paidAmount: purchase!.paidAmount,
     dueAmount: purchase!.dueAmount,
@@ -283,7 +289,32 @@ export default function PurchaseDetailPage() {
       </div>
 
       {/* Payment Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="card mb-6">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Payment Summary</h3>
+        <div className="space-y-3 mb-4">
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-slate-600 dark:text-slate-400">Subtotal (Products)</span>
+            <span className="font-semibold text-slate-900 dark:text-white">
+              Rs. {purchase.subtotal.toLocaleString("en-PK", { minimumFractionDigits: 1 })}
+            </span>
+          </div>
+          {purchase.additionalCharges > 0 && (
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-slate-600 dark:text-slate-400">
+                Additional Charges
+                {purchase.chargesDescription && (
+                  <span className="text-xs ml-1">({purchase.chargesDescription})</span>
+                )}
+              </span>
+              <span className="font-semibold text-amber-600 dark:text-amber-400">
+                + Rs. {purchase.additionalCharges.toLocaleString("en-PK", { minimumFractionDigits: 1 })}
+              </span>
+            </div>
+          )}
+          <div className="border-t border-slate-200 dark:border-slate-700 pt-3"></div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="card">
           <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">
             Total Amount
@@ -319,6 +350,7 @@ export default function PurchaseDetailPage() {
             })}
           </div>
         </div>
+      </div>
       </div>
 
       {/* Notes */}

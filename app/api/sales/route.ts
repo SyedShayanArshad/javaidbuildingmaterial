@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { customerId, saleDate, receivedAmount, paymentMode, notes, items, isWalkIn, walkInCustomerName } = body;
+    const { customerId, saleDate, receivedAmount, paymentMode, notes, items, isWalkIn, walkInCustomerName, additionalCharges, chargesDescription } = body;
 
     // Validation
     if (!isWalkIn && !customerId) {
@@ -60,11 +60,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate totals
-    const totalAmount = items.reduce(
+    // Calculate subtotal from items
+    const subtotal = items.reduce(
       (sum: number, item: any) => sum + item.quantity * item.rate,
       0,
     );
+    const charges = parseFloat(additionalCharges) || 0;
+    const totalAmount = subtotal + charges;
     const received = parseFloat(receivedAmount) || 0;
     const due = totalAmount - received;
 
@@ -110,6 +112,9 @@ export async function POST(request: NextRequest) {
           customerId: isWalkIn ? null : customerId,
           invoiceNumber,
           saleDate: new Date(saleDate),
+          subtotal,
+          additionalCharges: charges,
+          chargesDescription: chargesDescription || null,
           totalAmount,
           paidAmount: received,
           dueAmount: due,

@@ -32,6 +32,9 @@ interface Sale {
     balance: number;
   } | null;
   saleDate: string;
+  subtotal: number;
+  additionalCharges: number;
+  chargesDescription: string | null;
   totalAmount: number;
   paidAmount: number;
   dueAmount: number;
@@ -99,6 +102,9 @@ export default function SaleDetailPage() {
         unitPrice: item.unitPrice,
         totalPrice: item.totalPrice,
       })),
+      subtotal: sale.subtotal,
+      additionalCharges: sale.additionalCharges,
+      chargesDescription: sale.chargesDescription || undefined,
       totalAmount: sale.totalAmount,
       paidAmount: sale.paidAmount,
       dueAmount: sale.dueAmount,
@@ -127,6 +133,9 @@ export default function SaleDetailPage() {
         unitPrice: item.unitPrice,
         totalPrice: item.totalPrice,
       })),
+      subtotal: sale.subtotal,
+      additionalCharges: sale.additionalCharges,
+      chargesDescription: sale.chargesDescription || undefined,
       totalAmount: sale.totalAmount,
       paidAmount: sale.paidAmount,
       dueAmount: sale.dueAmount,
@@ -286,7 +295,32 @@ export default function SaleDetailPage() {
       </div>
 
       {/* Payment Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="card mb-6">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Payment Summary</h3>
+        <div className="space-y-3 mb-4">
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-slate-600 dark:text-slate-400">Subtotal (Products)</span>
+            <span className="font-semibold text-slate-900 dark:text-white">
+              Rs. {sale.subtotal.toLocaleString("en-PK", { minimumFractionDigits: 1 })}
+            </span>
+          </div>
+          {sale.additionalCharges > 0 && (
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-slate-600 dark:text-slate-400">
+                Additional Charges
+                {sale.chargesDescription && (
+                  <span className="text-xs ml-1">({sale.chargesDescription})</span>
+                )}
+              </span>
+              <span className="font-semibold text-amber-600 dark:text-amber-400">
+                + Rs. {sale.additionalCharges.toLocaleString("en-PK", { minimumFractionDigits: 1 })}
+              </span>
+            </div>
+          )}
+          <div className="border-t border-slate-200 dark:border-slate-700 pt-3"></div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="card">
           <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">
             Total Amount
@@ -322,6 +356,7 @@ export default function SaleDetailPage() {
             })}
           </div>
         </div>
+      </div>
       </div>
 
       {/* Notes */}
