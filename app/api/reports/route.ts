@@ -402,6 +402,7 @@ async function stockValue() {
       unit: p.unit,
       quantity: p.stockQuantity,
       isLowStock: p.stockQuantity <= p.minimumStockLevel,
+      isNegativeStock: p.stockQuantity < 0,
     })),
   });
 }

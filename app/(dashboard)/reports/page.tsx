@@ -288,7 +288,9 @@ useEffect(() => {
       csvContent = "Product,Unit,Stock Quantity,Minimum Quantity,Status\n";
       stockReport.forEach((item) => {
         const isLowStock = item.stockQuantity < item.minimumStockLevel;
-        csvContent += `${item.name},${item.unit},${item.stockQuantity},${item.minimumStockLevel},${isLowStock ? "Low Stock" : "Normal"}\n`;
+        const isNegative = item.stockQuantity < 0;
+        const status = isNegative ? "Negative Stock" : isLowStock ? "Low Stock" : "Normal";
+        csvContent += `${item.name},${item.unit},${item.stockQuantity},${item.minimumStockLevel},${status}\n`;
       });
       filename = "stock-report.csv";
     } else if (activeTab === "party-ledger") {
@@ -584,26 +586,37 @@ useEffect(() => {
                         {stockReport.map((item) => {
                           const isLowStock =
                             item.stockQuantity < item.minimumStockLevel;
+                          const isNegativeStock = item.stockQuantity < 0;
                           return (
                             <TableRow
                               key={item.id}
                               className={
-                                isLowStock
-                                  ? "bg-rose-50 dark:bg-rose-900/10"
-                                  : ""
+                                isNegativeStock
+                                  ? "bg-amber-50 dark:bg-amber-900/10"
+                                  : isLowStock
+                                    ? "bg-rose-50 dark:bg-rose-900/10"
+                                    : ""
                               }
                             >
                               <TableCell className="font-medium">
                                 <div className="flex items-center gap-3">
                                   <div
                                     className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                                      isLowStock
-                                        ? "bg-rose-100 dark:bg-rose-900/30"
-                                        : "bg-emerald-100 dark:bg-emerald-900/30"
+                                      isNegativeStock
+                                        ? "bg-amber-100 dark:bg-amber-900/30"
+                                        : isLowStock
+                                          ? "bg-rose-100 dark:bg-rose-900/30"
+                                          : "bg-emerald-100 dark:bg-emerald-900/30"
                                     }`}
                                   >
                                     <Package
-                                      className={`w-4 h-4 ${isLowStock ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"}`}
+                                      className={`w-4 h-4 ${
+                                        isNegativeStock
+                                          ? "text-amber-600 dark:text-amber-400"
+                                          : isLowStock 
+                                            ? "text-rose-600 dark:text-rose-400" 
+                                            : "text-emerald-600 dark:text-emerald-400"
+                                      }`}
                                     />
                                   </div>
                                   {item.name}
@@ -611,7 +624,13 @@ useEffect(() => {
                               </TableCell>
                               <TableCell>
                                 <span
-                                  className={`font-semibold ${isLowStock ? "text-rose-600 dark:text-rose-400" : "text-slate-900 dark:text-white"}`}
+                                  className={`font-semibold ${
+                                    isNegativeStock
+                                      ? "text-amber-600 dark:text-amber-400"
+                                      : isLowStock 
+                                        ? "text-rose-600 dark:text-rose-400" 
+                                        : "text-slate-900 dark:text-white"
+                                  }`}
                                 >
                                   {item.stockQuantity} {item.unit}
                                 </span>
@@ -620,7 +639,12 @@ useEffect(() => {
                                 {item.minimumStockLevel} {item.unit}
                               </TableCell>
                               <TableCell>
-                                {isLowStock ? (
+                                {isNegativeStock ? (
+                                  <Badge variant="warning">
+                                    <AlertTriangle className="w-3 h-3" />
+                                    Negative Stock
+                                  </Badge>
+                                ) : isLowStock ? (
                                   <Badge variant="danger">
                                     <AlertTriangle className="w-3 h-3" />
                                     Low Stock

@@ -51,6 +51,7 @@ export default function StockAdjustmentPage() {
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState('');
+  const [allowNegativeStock, setAllowNegativeStock] = useState(false);
 
   const [formData, setFormData] = useState({
     productId: '',
@@ -62,7 +63,7 @@ export default function StockAdjustmentPage() {
   useEffect(() => {
     const loadData = async () => {
       setPageLoading(true);
-      await Promise.all([fetchProducts(), fetchAdjustments()]);
+      await Promise.all([fetchProducts(), fetchAdjustments(), fetchSettings()]);
       setPageLoading(false);
     };
     loadData();
@@ -96,6 +97,18 @@ export default function StockAdjustmentPage() {
       setAdjustments(data);
     } catch (error) {
       console.error('Error fetching adjustments:', error);
+    }
+  };
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/settings', { credentials: 'include' });
+      if (response.ok) {
+        const data = await response.json();
+        setAllowNegativeStock(data.allowNegativeStock || false);
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error);
     }
   };
 
@@ -133,7 +146,7 @@ export default function StockAdjustmentPage() {
     }
 
     if (formData.adjustmentType === 'OUT' && selectedProduct) {
-      if (qty > selectedProduct.stockQuantity) {
+      if (qty > selectedProduct.stockQuantity && !allowNegativeStock) {
         const errorMsg = `Cannot remove ${qty} ${selectedProduct.unit}. Only ${selectedProduct.stockQuantity} ${selectedProduct.unit} available.`;
         setError(errorMsg);
         toast.error(errorMsg);
@@ -323,13 +336,19 @@ export default function StockAdjustmentPage() {
                 {newStock !== null && (
                   <p className={`text-sm mt-2 font-medium ${
                     newStock < 0 
-                      ? 'text-rose-600 dark:text-rose-400' 
+                      ? (allowNegativeStock ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400')
                       : 'text-gray-600 dark:text-gray-400'
                   }`}>
                     New stock will be:{' '}
                     <strong>
                       {newStock.toFixed(3)} {selectedProduct?.unit}
                     </strong>
+                    {newStock < 0 && allowNegativeStock && (
+                      <span className="block text-xs mt-1">⚠️ Stock will go negative (allowed by settings)</span>
+                    )}
+                    {newStock < 0 && !allowNegativeStock && (
+                      <span className="block text-xs mt-1">❌ Insufficient stock</span>
+                    )}
                   </p>
                 )}
               </FormGroup>

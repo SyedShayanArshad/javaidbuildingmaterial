@@ -27,7 +27,17 @@ model User {
   @@map("users")
 }
 
+// ========================================
+// SYSTEM SETTINGS
+// ========================================
 
+model SystemSettings {
+  id                  String   @id @default("default")
+  allowNegativeStock  Boolean  @default(false) @map("allow_negative_stock")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@map("system_settings")
+}
 
 // ========================================
 // PRODUCT MANAGEMENT (Stock-Only)

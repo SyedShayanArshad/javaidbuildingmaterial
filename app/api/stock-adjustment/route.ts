@@ -72,6 +72,19 @@ export async function POST(request: NextRequest) {
 
     // Transaction to ensure atomic updates
     const result = await prisma.$transaction(async (tx) => {
+      // 0. Check system settings for negative stock
+      let allowNegativeStock = false;
+      try {
+        const settings = await tx.systemSettings.findUnique({
+          where: { id: 'default' },
+        });
+        if (settings) {
+          allowNegativeStock = settings.allowNegativeStock;
+        }
+      } catch (e) {
+        // Settings table may not exist yet during migration, default to false
+      }
+
       // 1. Fetch product
       const product = await tx.product.findUnique({
         where: { id: productId },
@@ -90,7 +103,7 @@ export async function POST(request: NextRequest) {
       const adjustment = adjustmentType === 'IN' ? qty : -qty;
       const newStock = currentStock + adjustment;
 
-      if (newStock < 0) {
+      if (newStock < 0 && !allowNegativeStock) {
         throw new Error(`Insufficient stock. Current: ${currentStock}, Attempting to remove: ${qty}`);
       }
 

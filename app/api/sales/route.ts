@@ -80,6 +80,19 @@ export async function POST(request: NextRequest) {
 
     // 🚀 OPTIMIZED TRANSACTION
     const result = await prisma.$transaction(async (tx) => {
+      // 0️⃣ Check system settings for negative stock
+      let allowNegativeStock = false;
+      try {
+        const settings = await tx.systemSettings.findUnique({
+          where: { id: 'default' },
+        });
+        if (settings) {
+          allowNegativeStock = settings.allowNegativeStock;
+        }
+      } catch (e) {
+        // Settings table may not exist yet during migration, default to false
+      }
+
       // 1️⃣ Fetch all products at once
       const productIds = items.map((item: any) => item.productId);
       const products = await tx.product.findMany({
@@ -88,7 +101,7 @@ export async function POST(request: NextRequest) {
 
       const productMap = new Map(products.map(p => [p.id, p]));
 
-      // 2️⃣ Validate stock for all items
+      // 2️⃣ Validate stock for all items (skip if negative stock allowed)
       for (const item of items) {
         const product = productMap.get(item.productId);
         
@@ -96,11 +109,13 @@ export async function POST(request: NextRequest) {
           throw new Error(`Product not found: ${item.productId}`);
         }
 
-        const currentStock = parseFloat(product.stockQuantity.toString());
-        if (currentStock < item.quantity) {
-          throw new Error(
-            `Insufficient stock for ${product.name}. Available: ${currentStock}, Required: ${item.quantity}`,
-          );
+        if (!allowNegativeStock) {
+          const currentStock = parseFloat(product.stockQuantity.toString());
+          if (currentStock < item.quantity) {
+            throw new Error(
+              `Insufficient stock for ${product.name}. Available: ${currentStock}, Required: ${item.quantity}`,
+            );
+          }
         }
       }
 

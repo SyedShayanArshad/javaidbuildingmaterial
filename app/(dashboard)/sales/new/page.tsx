@@ -39,6 +39,7 @@ export default function NewSalePage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState('');
+  const [allowNegativeStock, setAllowNegativeStock] = useState(false);
 
   
   // Customer search states
@@ -68,7 +69,7 @@ export default function NewSalePage() {
   useEffect(() => {
   const loadData = async () => {
     setPageLoading(true);
-    await Promise.all([fetchCustomers(), fetchProducts()]);
+    await Promise.all([fetchCustomers(), fetchProducts(), fetchSettings()]);
     setPageLoading(false);
   };
 
@@ -130,6 +131,18 @@ export default function NewSalePage() {
       setProducts(data);
     } catch (error) {
       console.error('Error fetching products:', error);
+    }
+  };
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/settings', { credentials: 'include' });
+      if (response.ok) {
+        const data = await response.json();
+        setAllowNegativeStock(data.allowNegativeStock || false);
+      }
+    } catch (error) {
+      console.error('Error fetching settings:', error);
     }
   };
 
@@ -485,8 +498,11 @@ export default function NewSalePage() {
                             </option>
                           ))}
                         </select>
-                        {product && product.stockQuantity <= 0 && (
+                        {product && product.stockQuantity <= 0 && !allowNegativeStock && (
                           <p className="text-xs text-rose-500 dark:text-rose-400 mt-1">Out of stock!</p>
+                        )}
+                        {product && product.stockQuantity < 0 && (
+                          <p className="text-xs text-amber-500 dark:text-amber-400 mt-1">Negative stock: {product.stockQuantity} {product.unit}</p>
                         )}
                       </div>
 
@@ -496,7 +512,7 @@ export default function NewSalePage() {
                           type="number"
                           step="0.001"
                           min="0.001"
-                          max={product?.stockQuantity || 999999}
+                          max={allowNegativeStock ? undefined : (product?.stockQuantity || 999999)}
                           required
                           className="input"
                           placeholder="0"
@@ -504,8 +520,15 @@ export default function NewSalePage() {
                           onChange={(e) => updateItem(index, 'quantity', e.target.value)}
                         />
                         {product && (
-                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                          <p className={`text-xs mt-1 ${
+                            product.stockQuantity < 0 
+                              ? 'text-amber-500 dark:text-amber-400' 
+                              : 'text-slate-500 dark:text-slate-400'
+                          }`}>
                             Available: {product.stockQuantity} {product.unit}
+                            {allowNegativeStock && product.stockQuantity <= 0 && (
+                              <span className="ml-1 text-amber-500 dark:text-amber-400">(Negative stock allowed)</span>
+                            )}
                           </p>
                         )}
                       </div>

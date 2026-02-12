@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
     const [
       totalProducts,
       lowStockProducts,
+      negativeStockProducts,
       totalVendors,
       totalCustomers,
       vendorBalanceResult,
@@ -33,6 +34,14 @@ export async function GET(request: NextRequest) {
           stockQuantity: {
             lt: prisma.product.fields.minimumStockLevel,
           },
+        },
+      }),
+
+      // Negative stock products
+      prisma.product.count({
+        where: {
+          isActive: true,
+          stockQuantity: { lt: 0 },
         },
       }),
 
@@ -90,6 +99,7 @@ export async function GET(request: NextRequest) {
     const stats = {
       totalProducts,
       lowStockProducts,
+      negativeStockProducts,
       totalVendors,
       totalCustomers,
       vendorBalance: Number(vendorBalanceResult._sum.balance || 0),

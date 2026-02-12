@@ -190,7 +190,13 @@ export default function ProductsPage() {
                     <span className="text-gray-600 dark:text-gray-400">{product.unit}</span>
                   </TableCell>
                   <TableCell>
-                    <span className={`font-semibold ${isLowStock ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-gray-100'}`}>
+                    <span className={`font-semibold ${
+                      product.stockQuantity < 0 
+                        ? 'text-amber-600 dark:text-amber-400' 
+                        : isLowStock 
+                          ? 'text-red-600 dark:text-red-400' 
+                          : 'text-gray-900 dark:text-gray-100'
+                    }`}>
                       {Number(product.stockQuantity).toFixed(3)}
                     </span>
                   </TableCell>
@@ -198,7 +204,11 @@ export default function ProductsPage() {
                     <span className="text-gray-600 dark:text-gray-400">{Number(product.minimumStockLevel).toFixed(3)}</span>
                   </TableCell>
                   <TableCell>
-                    {isLowStock ? (
+                    {product.stockQuantity < 0 ? (
+                      <Badge variant="warning" icon={<AlertTriangle className="w-3 h-3" />}>
+                        Negative Stock
+                      </Badge>
+                    ) : isLowStock ? (
                       <Badge variant="danger" icon={<AlertTriangle className="w-3 h-3" />}>
                         Low Stock
                       </Badge>

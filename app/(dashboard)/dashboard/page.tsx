@@ -21,6 +21,7 @@ import Link from 'next/link';
 interface DashboardStats {
   totalProducts: number;
   lowStockProducts: number;
+  negativeStockProducts: number;
   totalVendors: number;
   totalCustomers: number;
   vendorBalance: number;
@@ -86,6 +87,11 @@ export default function DashboardPage() {
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Low Stock Alerts</p>
                 <p className="text-3xl font-bold text-rose-600 dark:text-rose-400 mt-2">{stats?.lowStockProducts || 0}</p>
+                {(stats?.negativeStockProducts || 0) > 0 && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                    {stats?.negativeStockProducts} negative stock
+                  </p>
+                )}
               </div>
               <div className="w-12 h-12 bg-rose-100 dark:bg-rose-900/30 rounded-lg flex items-center justify-center">
                 <AlertTriangle className="w-6 h-6 text-rose-600 dark:text-rose-400" />
